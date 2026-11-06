@@ -9,7 +9,12 @@ it('renders the clinic dashboard and floating smart assist panel', function () {
         ->get('/dashboard')
         ->assertOk()
         ->assertSee('Good evening, Admin')
-        ->assertSee('Smart Assist');
+        ->assertSee('Smart Assist')
+        ->assertSee('href="'.route('dashboard').'"', false)
+        ->assertSee('href="'.route('patients').'"', false)
+        ->assertSee('href="'.route('appointments').'"', false)
+        ->assertSee('href="'.route('medical-records').'"', false)
+        ->assertSee('href="'.route('laboratory').'"', false);
 });
 
 it('redirects users back to login with a sign-up success message', function () {

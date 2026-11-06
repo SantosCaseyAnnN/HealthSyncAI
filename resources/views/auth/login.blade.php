@@ -31,7 +31,8 @@
 
             <div class="auth-card">
 
-                <form wire:submit="login">
+                <form method="POST" action="{{ route('login') }}">
+                    @csrf
 
                     {{-- EMAIL --}}
                     <div class="form-group">
@@ -43,24 +44,7 @@
                         <input
                             type="email"
                             id="email"
-                            wire:model="email"
-                            placeholder="Value"
-                        >
-
-                    </div>
-
-
-                    {{-- USER ID --}}
-                    <div class="form-group">
-
-                        <label for="user_id">
-                            User ID
-                        </label>
-
-                        <input
-                            type="text"
-                            id="user_id"
-                            wire:model="user_id"
+                            name="email"
                             placeholder="Value"
                         >
 
@@ -77,7 +61,7 @@
                         <input
                             type="password"
                             id="password"
-                            wire:model="password"
+                            name="password"
                             placeholder="Value"
                         >
 

@@ -22,27 +22,27 @@
 
         <nav class="navigation">
 
-            <a href="#" class="nav-item active">
+            <a href="{{ route('dashboard') }}" @class(['nav-item', 'active' => request()->routeIs('dashboard')])>
                 <span>▦</span>
                 Dashboard
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="{{ route('patients') }}" @class(['nav-item', 'active' => request()->routeIs('patients')])>
                 <span>♙</span>
                 Patients
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="{{ route('appointments') }}" @class(['nav-item', 'active' => request()->routeIs('appointments')])>
                 <span>□</span>
                 Appointments
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="{{ route('medical-records') }}" @class(['nav-item', 'active' => request()->routeIs('medical-records')])>
                 <span>▤</span>
                 Medical Records
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="{{ route('laboratory') }}" @class(['nav-item', 'active' => request()->routeIs('laboratory')])>
                 <span>♧</span>
                 Laboratory
             </a>
