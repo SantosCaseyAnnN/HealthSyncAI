@@ -24,6 +24,11 @@ class Patient extends Model
         'status',
         'blood_type',
         'allergies',
+        'medical_history',
+        'family_history',
+        'emergency_contact_name',
+        'emergency_contact_relationship',
+        'emergency_contact_phone',
     ];
 
     protected function casts(): array
@@ -46,5 +51,15 @@ class Patient extends Model
     public function labOrders(): HasMany
     {
         return $this->hasMany(LabOrder::class);
+    }
+
+    public function vaccinations(): HasMany
+    {
+        return $this->hasMany(PatientVaccination::class);
+    }
+
+    public function consents(): HasMany
+    {
+        return $this->hasMany(PatientConsent::class);
     }
 }

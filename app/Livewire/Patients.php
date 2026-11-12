@@ -43,6 +43,16 @@ class Patients extends Component
 
     public string $allergies = '';
 
+    public string $medicalHistory = '';
+
+    public string $familyHistory = '';
+
+    public string $emergencyContactName = '';
+
+    public string $emergencyContactRelationship = '';
+
+    public string $emergencyContactPhone = '';
+
     public function updatedSearch(): void
     {
         $this->resetPage();
@@ -79,6 +89,11 @@ class Patients extends Component
         $this->patientStatus = $patient->status;
         $this->bloodType = $patient->blood_type ?? '';
         $this->allergies = $patient->allergies ?? '';
+        $this->medicalHistory = $patient->medical_history ?? '';
+        $this->familyHistory = $patient->family_history ?? '';
+        $this->emergencyContactName = $patient->emergency_contact_name ?? '';
+        $this->emergencyContactRelationship = $patient->emergency_contact_relationship ?? '';
+        $this->emergencyContactPhone = $patient->emergency_contact_phone ?? '';
         $this->showForm = true;
     }
 
@@ -100,6 +115,11 @@ class Patients extends Component
             'patientStatus' => ['required', Rule::in(['active', 'inactive'])],
             'bloodType' => ['nullable', Rule::in(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])],
             'allergies' => ['nullable', 'string', 'max:5000'],
+            'medicalHistory' => ['nullable', 'string', 'max:10000'],
+            'familyHistory' => ['nullable', 'string', 'max:10000'],
+            'emergencyContactName' => ['nullable', 'string', 'max:150'],
+            'emergencyContactRelationship' => ['nullable', 'string', 'max:100'],
+            'emergencyContactPhone' => ['nullable', 'string', 'max:30'],
         ]);
 
         $attributes = [
@@ -113,6 +133,11 @@ class Patients extends Component
             'status' => $validated['patientStatus'],
             'blood_type' => $validated['bloodType'] ?: null,
             'allergies' => $validated['allergies'] ?: null,
+            'medical_history' => $validated['medicalHistory'] ?: null,
+            'family_history' => $validated['familyHistory'] ?: null,
+            'emergency_contact_name' => $validated['emergencyContactName'] ?: null,
+            'emergency_contact_relationship' => $validated['emergencyContactRelationship'] ?: null,
+            'emergency_contact_phone' => $validated['emergencyContactPhone'] ?: null,
         ];
 
         if ($this->editingPatientId === null) {
@@ -175,6 +200,11 @@ class Patients extends Component
             'provider',
             'bloodType',
             'allergies',
+            'medicalHistory',
+            'familyHistory',
+            'emergencyContactName',
+            'emergencyContactRelationship',
+            'emergencyContactPhone',
         );
         $this->patientStatus = 'active';
         $this->showForm = false;

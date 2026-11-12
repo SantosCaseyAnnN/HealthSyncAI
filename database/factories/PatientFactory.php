@@ -29,6 +29,11 @@ class PatientFactory extends Factory
             'status' => 'active',
             'blood_type' => fake()->randomElement(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
             'allergies' => null,
+            'medical_history' => null,
+            'family_history' => null,
+            'emergency_contact_name' => fake()->name(),
+            'emergency_contact_relationship' => fake()->randomElement(['Parent', 'Sibling', 'Partner', 'Friend']),
+            'emergency_contact_phone' => fake()->phoneNumber(),
         ];
     }
 }

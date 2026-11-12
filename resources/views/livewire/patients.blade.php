@@ -13,6 +13,10 @@
             </button>
         </div>
 
+        @if (app()->environment('local', 'testing'))
+            <p class="clinical-notice" role="note">Demo/testing mode: use synthetic records only. Do not enter real patient information.</p>
+        @endif
+
         @if (session()->has('status'))
             <p class="clinical-notice" role="status">{{ session('status') }}</p>
         @endif
@@ -76,6 +80,26 @@
                         <label class="clinical-form-wide">Allergies
                             <textarea wire:model="allergies" rows="2" maxlength="5000"></textarea>
                             @error('allergies') <small class="clinical-error">{{ $message }}</small> @enderror
+                        </label>
+                        <label class="clinical-form-wide">Medical history
+                            <textarea wire:model="medicalHistory" rows="3" maxlength="10000"></textarea>
+                            @error('medicalHistory') <small class="clinical-error">{{ $message }}</small> @enderror
+                        </label>
+                        <label class="clinical-form-wide">Family history
+                            <textarea wire:model="familyHistory" rows="3" maxlength="10000"></textarea>
+                            @error('familyHistory') <small class="clinical-error">{{ $message }}</small> @enderror
+                        </label>
+                        <label>Emergency contact name
+                            <input type="text" wire:model="emergencyContactName" maxlength="150">
+                            @error('emergencyContactName') <small class="clinical-error">{{ $message }}</small> @enderror
+                        </label>
+                        <label>Relationship
+                            <input type="text" wire:model="emergencyContactRelationship" maxlength="100">
+                            @error('emergencyContactRelationship') <small class="clinical-error">{{ $message }}</small> @enderror
+                        </label>
+                        <label>Emergency contact phone
+                            <input type="text" wire:model="emergencyContactPhone" maxlength="30">
+                            @error('emergencyContactPhone') <small class="clinical-error">{{ $message }}</small> @enderror
                         </label>
                     </div>
                     <div class="clinical-form-actions">
@@ -144,6 +168,7 @@
                                     <a href="{{ route('laboratory', ['patient' => $patient->id]) }}">Labs {{ $patient->lab_orders_count }}</a>
                                 </td>
                                 <td>
+                                    <a class="small-outline-button" href="{{ route('patients.show', $patient) }}">EHR Profile</a>
                                     <button class="small-outline-button" type="button" wire:click="editPatient({{ $patient->id }})">Edit</button>
                                 </td>
                             </tr>

@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\PatientQrCodeController;
 use App\Livewire\Appointments;
 use App\Livewire\Laboratory;
 use App\Livewire\MedicalRecords;
+use App\Livewire\PatientProfile;
 use App\Livewire\Patients;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +24,8 @@ Route::middleware([
     })->name('dashboard');
 
     Route::get('/patients', Patients::class)->name('patients');
+    Route::get('/patients/{patient}', PatientProfile::class)->name('patients.show');
+    Route::get('/patients/{patient}/qr', PatientQrCodeController::class)->name('patients.qr');
     Route::get('/appointments', Appointments::class)->name('appointments');
     Route::get('/medical-records', MedicalRecords::class)
         ->name('medical-records');

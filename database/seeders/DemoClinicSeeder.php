@@ -6,6 +6,8 @@ use App\Models\Appointment;
 use App\Models\LabOrder;
 use App\Models\MedicalRecord;
 use App\Models\Patient;
+use App\Models\PatientConsent;
+use App\Models\PatientVaccination;
 use Illuminate\Database\Seeder;
 
 class DemoClinicSeeder extends Seeder
@@ -16,11 +18,39 @@ class DemoClinicSeeder extends Seeder
     public function run(): void
     {
         $demoPatients = [
-            ['patient_number' => 'PAT-1001', 'first_name' => 'Maria', 'last_name' => 'Santos', 'age' => 34, 'gender' => 'Female', 'phone' => '+63 917 123 4567', 'provider' => 'Dr. Adrian Reyes', 'blood_type' => 'B+'],
+            [
+                'patient_number' => 'PAT-1001',
+                'first_name' => 'Maria',
+                'last_name' => 'Santos',
+                'age' => 34,
+                'gender' => 'Female',
+                'phone' => '+63 917 123 4567',
+                'provider' => 'Dr. Adrian Reyes',
+                'blood_type' => 'B+',
+                'medical_history' => 'DEMO ONLY: Example primary-care history; not a verified clinical record.',
+                'family_history' => 'DEMO ONLY: Example family history; not clinically verified.',
+                'emergency_contact_name' => 'Demo Contact A',
+                'emergency_contact_relationship' => 'Sibling',
+                'emergency_contact_phone' => '+63 917 000 1001',
+            ],
             ['patient_number' => 'PAT-1002', 'first_name' => 'John', 'last_name' => 'Dela Cruz', 'age' => 42, 'gender' => 'Male', 'phone' => '+63 918 234 5678', 'provider' => 'Dr. Camille Garcia', 'blood_type' => 'O+'],
             ['patient_number' => 'PAT-1003', 'first_name' => 'Angela', 'last_name' => 'Ramos', 'age' => 29, 'gender' => 'Female', 'phone' => '+63 919 345 6789', 'provider' => 'Dr. Miguel Torres', 'blood_type' => 'AB+'],
             ['patient_number' => 'PAT-1004', 'first_name' => 'Carlos', 'last_name' => 'Mendoza', 'age' => 51, 'gender' => 'Male', 'phone' => '+63 920 456 7890', 'provider' => 'Dr. Sofia Navarro', 'blood_type' => 'A+'],
-            ['patient_number' => 'PAT-1005', 'first_name' => 'Patricia', 'last_name' => 'Flores', 'age' => 38, 'gender' => 'Female', 'phone' => '+63 921 567 8901', 'provider' => 'Dr. Daniel Cruz', 'blood_type' => 'O+'],
+            [
+                'patient_number' => 'PAT-1005',
+                'first_name' => 'Patricia',
+                'last_name' => 'Flores',
+                'age' => 38,
+                'gender' => 'Female',
+                'phone' => '+63 921 567 8901',
+                'provider' => 'Dr. Daniel Cruz',
+                'blood_type' => 'O+',
+                'medical_history' => 'DEMO ONLY: Example follow-up history; not a verified clinical record.',
+                'family_history' => 'DEMO ONLY: Example family history; not clinically verified.',
+                'emergency_contact_name' => 'Demo Contact B',
+                'emergency_contact_relationship' => 'Parent',
+                'emergency_contact_phone' => '+63 921 000 1005',
+            ],
             ['patient_number' => 'PAT-1006', 'first_name' => 'Ruth', 'last_name' => 'Adeyemi', 'age' => 31, 'gender' => 'Female', 'phone' => '+63 923 789 0123', 'provider' => 'Dr. Adrian Reyes', 'blood_type' => null],
             ['patient_number' => 'PAT-1007', 'first_name' => 'Luke', 'last_name' => 'Henderson', 'age' => 45, 'gender' => 'Male', 'phone' => '+63 922 678 9012', 'provider' => null, 'blood_type' => null],
         ];
@@ -28,7 +58,7 @@ class DemoClinicSeeder extends Seeder
         $patients = [];
 
         foreach ($demoPatients as $demoPatient) {
-            $patients[$demoPatient['patient_number']] = Patient::firstOrCreate(
+            $patient = Patient::firstOrCreate(
                 ['patient_number' => $demoPatient['patient_number']],
                 [
                     'first_name' => $demoPatient['first_name'],
@@ -40,9 +70,58 @@ class DemoClinicSeeder extends Seeder
                     'status' => 'active',
                     'blood_type' => $demoPatient['blood_type'],
                     'allergies' => $demoPatient['patient_number'] === 'PAT-1005' ? 'Penicillin' : null,
+                    'medical_history' => $demoPatient['medical_history'] ?? null,
+                    'family_history' => $demoPatient['family_history'] ?? null,
+                    'emergency_contact_name' => $demoPatient['emergency_contact_name'] ?? null,
+                    'emergency_contact_relationship' => $demoPatient['emergency_contact_relationship'] ?? null,
+                    'emergency_contact_phone' => $demoPatient['emergency_contact_phone'] ?? null,
                 ],
             );
+
+            foreach ([
+                'medical_history',
+                'family_history',
+                'emergency_contact_name',
+                'emergency_contact_relationship',
+                'emergency_contact_phone',
+            ] as $attribute) {
+                if ($patient->{$attribute} === null && isset($demoPatient[$attribute])) {
+                    $patient->{$attribute} = $demoPatient[$attribute];
+                }
+            }
+
+            if ($patient->isDirty()) {
+                $patient->save();
+            }
+
+            $patients[$demoPatient['patient_number']] = $patient;
         }
+
+        PatientVaccination::firstOrCreate(
+            [
+                'patient_id' => $patients['PAT-1001']->id,
+                'vaccine_name' => 'Influenza',
+                'dose' => 'Annual demo dose',
+            ],
+            [
+                'administered_at' => now()->subMonths(2)->toDateString(),
+                'administered_by' => 'Demo Nurse',
+                'notes' => 'Synthetic demo record; not clinically verified.',
+            ],
+        );
+
+        PatientConsent::firstOrCreate(
+            [
+                'patient_id' => $patients['PAT-1001']->id,
+                'consent_type' => 'Treatment',
+                'form_version' => 'demo-1',
+            ],
+            [
+                'status' => 'granted',
+                'recorded_at' => now()->subMonth(),
+                'notes' => 'Synthetic demo record; not a signed legal document.',
+            ],
+        );
 
         $demoAppointments = [
             ['code' => 'APT-1001', 'patient' => 'PAT-1001', 'time' => '08:30:00', 'provider' => 'Dr. Adrian Reyes', 'type' => 'General Consultation', 'status' => 'completed'],
