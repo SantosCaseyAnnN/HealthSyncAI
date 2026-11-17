@@ -23,11 +23,20 @@
         <a href="{{ route('laboratory') }}" @class(['nav-item', 'active' => $active === 'laboratory'])>
             <span>♧</span> Laboratory
         </a>
+        <a href="{{ route('prescriptions') }}" @class(['nav-item', 'active' => $active === 'prescriptions'])>
+            <span>Rx</span> Prescriptions
+        </a>
+        <a href="{{ route('check-ins.index') }}" @class(['nav-item', 'active' => $active === 'check-ins'])>
+            <span>↪</span> Check-ins & queue
+        </a>
     </nav>
 
     <div class="sidebar-user">
         <div class="user-icon">♙</div>
-        <strong>{{ auth()->user()->name }}</strong>
+        <div>
+            <strong>{{ auth()->user()->name }}</strong>
+            <small>{{ auth()->user()->roleLabel() }}</small>
+        </div>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit" aria-label="Log out">⇥</button>

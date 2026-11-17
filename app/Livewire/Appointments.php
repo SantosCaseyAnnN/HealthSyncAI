@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\AuthorizesClinicStaff;
 use App\Models\Appointment;
 use App\Models\Patient;
 use Carbon\Carbon;
@@ -14,6 +15,7 @@ use Livewire\WithPagination;
 
 class Appointments extends Component
 {
+    use AuthorizesClinicStaff;
     use WithPagination;
 
     public string $viewMode = 'list';

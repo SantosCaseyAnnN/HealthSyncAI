@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\AuthorizesClinicStaff;
 use App\Models\Patient;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
@@ -11,6 +12,7 @@ use Livewire\WithPagination;
 
 class Patients extends Component
 {
+    use AuthorizesClinicStaff;
     use WithPagination;
 
     public string $search = '';

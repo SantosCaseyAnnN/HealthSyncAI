@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\AuthorizesClinicStaff;
 use App\Models\Appointment;
 use App\Models\LabOrder;
 use App\Models\MedicalRecord;
@@ -15,6 +16,7 @@ use Livewire\WithPagination;
 
 class Laboratory extends Component
 {
+    use AuthorizesClinicStaff;
     use WithPagination;
 
     public string $search = '';

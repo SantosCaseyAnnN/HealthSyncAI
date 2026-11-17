@@ -12,6 +12,18 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    public const ROLE_CLINIC_STAFF = 'clinic_staff';
+
+    public const ROLE_STUDENT = 'student';
+
+    public const ROLE_ADMIN = 'admin';
+
+    public const APPROVAL_PENDING = 'pending';
+
+    public const APPROVAL_APPROVED = 'approved';
+
+    public const APPROVAL_REJECTED = 'rejected';
+
     use HasApiTokens;
 
     /** @use HasFactory<UserFactory> */
@@ -28,8 +40,17 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'first_name',
+        'middle_name',
+        'last_name',
         'email',
         'password',
+        'role',
+        'approval_status',
+        'is_active',
+        'school_id',
+        'year_level',
+        'school_id_verified_at',
     ];
 
     /**
@@ -63,6 +84,38 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
+            'school_id_verified_at' => 'datetime',
         ];
+    }
+
+    public function isClinicStaff(): bool
+    {
+        return $this->role === self::ROLE_CLINIC_STAFF;
+    }
+
+    public function isStudent(): bool
+    {
+        return $this->role === self::ROLE_STUDENT;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function hasWorkspaceAccess(): bool
+    {
+        return $this->is_active && $this->approval_status === self::APPROVAL_APPROVED;
+    }
+
+    public function roleLabel(): string
+    {
+        return match ($this->role) {
+            self::ROLE_CLINIC_STAFF => 'Clinic Staff',
+            self::ROLE_STUDENT => 'Student',
+            self::ROLE_ADMIN => 'Admin',
+            default => 'Unassigned',
+        };
     }
 }

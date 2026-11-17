@@ -9,7 +9,10 @@ test('login screen can be rendered', function () {
         ->assertOk()
         ->assertSee('method="POST"', false)
         ->assertSee('name="email"', false)
-        ->assertSee('name="password"', false);
+        ->assertSee('name="password"', false)
+        ->assertSee('name="remember"', false)
+        ->assertSee('Forgot password?')
+        ->assertSee('Create an account');
 });
 
 test('users can authenticate using the login screen', function () {
