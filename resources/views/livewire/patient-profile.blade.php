@@ -7,7 +7,7 @@
         <div class="page-heading">
             <div>
                 <h2>EHR Profile</h2>
-                <p>{{ $profilePatient->patient_number }} · {{ $profilePatient->first_name }} {{ $profilePatient->last_name }}</p>
+                <p>{{ $profilePatient->patient_number }} · {{ $profilePatient->full_name }}</p>
             </div>
             <a class="small-outline-button" href="{{ route('patients') }}">Back to Patients</a>
         </div>

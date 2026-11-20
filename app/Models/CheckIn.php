@@ -14,8 +14,10 @@ class CheckIn extends Model
 
     protected $fillable = [
         'patient_id',
+        'possible_match_patient_id',
         'existing_patient_number',
         'first_name',
+        'middle_name',
         'last_name',
         'date_of_birth',
         'phone',
@@ -55,6 +57,38 @@ class CheckIn extends Model
     public function patient(): BelongsTo
     {
         return $this->belongsTo(Patient::class);
+    }
+
+    public function possibleMatchPatient(): BelongsTo
+    {
+        return $this->belongsTo(Patient::class, 'possible_match_patient_id');
+    }
+
+    public static function linkPendingDuplicates(Patient $patient, ?int $exceptCheckInId = null): void
+    {
+        if ($patient->date_of_birth === null || blank($patient->middle_name)) {
+            return;
+        }
+
+        static::query()
+            ->where('status', 'pending')
+            ->whereNull('patient_id')
+            ->whereNull('possible_match_patient_id')
+            ->when($exceptCheckInId !== null, fn ($query) => $query->where('id', '!=', $exceptCheckInId))
+            ->whereDate('date_of_birth', $patient->date_of_birth->toDateString())
+            ->whereRaw('LOWER(TRIM(first_name)) = ?', [mb_strtolower(trim($patient->first_name))])
+            ->whereRaw('LOWER(TRIM(middle_name)) = ?', [mb_strtolower(trim($patient->middle_name))])
+            ->whereRaw('LOWER(TRIM(last_name)) = ?', [mb_strtolower(trim($patient->last_name))])
+            ->update(['possible_match_patient_id' => $patient->id]);
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return implode(' ', array_filter([
+            trim((string) $this->first_name),
+            trim((string) $this->middle_name),
+            trim((string) $this->last_name),
+        ], fn (string $name): bool => $name !== ''));
     }
 
     public function requestedPatient(): BelongsTo

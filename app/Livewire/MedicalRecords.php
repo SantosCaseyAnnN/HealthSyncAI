@@ -203,6 +203,7 @@ class MedicalRecords extends Component
                         ->orWhereHas('patient', function ($query) use ($search) {
                             $query->where('patient_number', 'like', $search)
                                 ->orWhere('first_name', 'like', $search)
+                                ->orWhere('middle_name', 'like', $search)
                                 ->orWhere('last_name', 'like', $search);
                         });
                 });

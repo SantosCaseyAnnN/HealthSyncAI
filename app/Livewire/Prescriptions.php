@@ -150,13 +150,14 @@ class Prescriptions extends Component
 
         return view('livewire.prescriptions', [
             'prescriptions' => Prescription::query()
-                ->with(['patient:id,patient_number,first_name,last_name', 'prescribedBy:id,name'])
+                ->with(['patient:id,patient_number,first_name,middle_name,last_name', 'prescribedBy:id,name'])
                 ->when($this->patientFilter, fn ($query) => $query->where('patient_id', $this->patientFilter))
                 ->when($this->search !== '', fn ($query) => $query->where(function ($query) use ($search) {
                     $query->where('medication', 'like', $search)
                         ->orWhereHas('patient', fn ($query) => $query
                             ->where('patient_number', 'like', $search)
                             ->orWhere('first_name', 'like', $search)
+                            ->orWhere('middle_name', 'like', $search)
                             ->orWhere('last_name', 'like', $search));
                 }))
                 ->orderByDesc('issued_at')

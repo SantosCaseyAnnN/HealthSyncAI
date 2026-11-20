@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Livewire\Concerns\AuthorizesClinicStaff;
+use App\Models\CheckIn as PatientCheckIn;
 use App\Models\Patient;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
@@ -24,6 +25,8 @@ class Patients extends Component
     public ?int $editingPatientId = null;
 
     public string $firstName = '';
+
+    public string $middleName = '';
 
     public string $lastName = '';
 
@@ -94,6 +97,7 @@ class Patients extends Component
         $this->selectedPatientId = $patient->id;
         $this->editingPatientId = $patient->id;
         $this->firstName = $patient->first_name;
+        $this->middleName = $patient->middle_name ?? '';
         $this->lastName = $patient->last_name;
         $this->dateOfBirth = $patient->date_of_birth?->toDateString() ?? '';
         $this->genderInput = $patient->gender ?? '';
@@ -124,6 +128,7 @@ class Patients extends Component
     {
         $validated = $this->validate([
             'firstName' => ['required', 'string', 'max:100'],
+            'middleName' => ['required', 'string', 'max:100'],
             'lastName' => ['required', 'string', 'max:100'],
             'dateOfBirth' => ['nullable', 'date', 'before_or_equal:today'],
             'genderInput' => ['nullable', Rule::in(['Female', 'Male', 'Other'])],
@@ -154,9 +159,31 @@ class Patients extends Component
             'oxygenSaturation' => ['nullable', 'numeric', 'min:50', 'max:100'],
         ]);
 
+        $firstName = trim($validated['firstName']);
+        $middleName = trim($validated['middleName']);
+        $lastName = trim($validated['lastName']);
+
+        if ($validated['dateOfBirth'] !== null && $validated['dateOfBirth'] !== '') {
+            $matchingPatient = Patient::query()
+                ->matchingIdentity($firstName, $middleName, $lastName, $validated['dateOfBirth'])
+                ->when($this->editingPatientId !== null, fn ($query) => $query->where('id', '!=', $this->editingPatientId))
+                ->orderBy('id')
+                ->first();
+
+            if ($matchingPatient !== null) {
+                $this->addError(
+                    'middleName',
+                    "A patient with this name and date of birth already has record {$matchingPatient->patient_number}. Review that record instead of creating a duplicate.",
+                );
+
+                return;
+            }
+        }
+
         $attributes = [
-            'first_name' => $validated['firstName'],
-            'last_name' => $validated['lastName'],
+            'first_name' => $firstName,
+            'middle_name' => $middleName,
+            'last_name' => $lastName,
             'date_of_birth' => $validated['dateOfBirth'] ?: null,
             'gender' => $validated['genderInput'] ?: null,
             'phone' => $validated['phone'] ?: null,
@@ -197,6 +224,8 @@ class Patients extends Component
             session()->flash('status', 'Patient details were updated.');
         }
 
+        PatientCheckIn::linkPendingDuplicates($patient);
+
         $this->resetForm();
         $this->resetPage();
     }
@@ -221,6 +250,7 @@ class Patients extends Component
                 $query->where(function ($query) use ($search) {
                     $query->where('patient_number', 'like', $search)
                         ->orWhere('first_name', 'like', $search)
+                        ->orWhere('middle_name', 'like', $search)
                         ->orWhere('last_name', 'like', $search)
                         ->orWhere('phone', 'like', $search);
                 });
@@ -242,6 +272,7 @@ class Patients extends Component
         $this->reset(
             'editingPatientId',
             'firstName',
+            'middleName',
             'lastName',
             'dateOfBirth',
             'genderInput',

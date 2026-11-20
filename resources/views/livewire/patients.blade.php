@@ -36,6 +36,10 @@
                             <input type="text" wire:model="firstName" required maxlength="100">
                             @error('firstName') <small class="clinical-error">{{ $message }}</small> @enderror
                         </label>
+                        <label>Middle name
+                            <input type="text" wire:model="middleName" required maxlength="100">
+                            @error('middleName') <small class="clinical-error">{{ $message }}</small> @enderror
+                        </label>
                         <label>Last name
                             <input type="text" wire:model="lastName" required maxlength="100">
                             @error('lastName') <small class="clinical-error">{{ $message }}</small> @enderror
@@ -179,7 +183,7 @@
                                 <tr wire:key="patient-{{ $patient->id }}" @class(['selected-patient-row' => $selectedPatient?->id === $patient->id])>
                                     <td>
                                         <button class="patient-select-button" type="button" wire:click="selectPatient({{ $patient->id }})">
-                                            <strong>{{ $patient->first_name }} {{ $patient->last_name }}</strong>
+                                            <strong>{{ $patient->full_name }}</strong>
                                             <small>{{ $patient->patient_number }}</small>
                                         </button>
                                     </td>
@@ -210,7 +214,7 @@
                 @if ($selectedPatient)
                     <div class="patient-summary-header">
                         <p>Patient summary</p>
-                        <h3>{{ $selectedPatient->first_name }} {{ $selectedPatient->last_name }}</h3>
+                        <h3>{{ $selectedPatient->full_name }}</h3>
                         <small>{{ $selectedPatient->patient_number }} · Registered {{ $selectedPatient->created_at->format('d M Y') }}</small>
                     </div>
 

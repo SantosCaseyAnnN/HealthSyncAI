@@ -21,6 +21,7 @@ class CheckInFactory extends Factory
         return [
             'patient_id' => Patient::factory(),
             'first_name' => fake()->firstName(),
+            'middle_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
             'date_of_birth' => fake()->date(),
             'phone' => fake()->phoneNumber(),

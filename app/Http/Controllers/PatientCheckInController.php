@@ -34,6 +34,7 @@ class PatientCheckInController extends Controller
     {
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:100'],
+            'middle_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
             'date_of_birth' => ['nullable', 'date', 'before_or_equal:today'],
             'phone' => ['nullable', 'string', 'max:30'],
@@ -52,8 +53,26 @@ class PatientCheckInController extends Controller
             'oxygen_saturation' => ['nullable', 'numeric', 'min:50', 'max:100'],
         ]);
 
+        $validated['first_name'] = trim($validated['first_name']);
+        $validated['middle_name'] = trim($validated['middle_name']);
+        $validated['last_name'] = trim($validated['last_name']);
+
+        $possibleMatchPatient = null;
+        if ($patient === null && filled($validated['date_of_birth'] ?? null)) {
+            $possibleMatchPatient = Patient::query()
+                ->matchingIdentity(
+                    $validated['first_name'],
+                    $validated['middle_name'],
+                    $validated['last_name'],
+                    $validated['date_of_birth'],
+                )
+                ->orderBy('id')
+                ->first();
+        }
+
         CheckIn::create([
             ...$validated,
+            'possible_match_patient_id' => $possibleMatchPatient?->id,
             'existing_patient_number' => ($validated['existing_patient_number'] ?? null)
                 ? strtoupper(trim($validated['existing_patient_number']))
                 : null,

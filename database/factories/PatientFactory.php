@@ -20,6 +20,7 @@ class PatientFactory extends Factory
         return [
             'patient_number' => fake()->unique()->numerify('PAT-####'),
             'first_name' => fake()->firstName(),
+            'middle_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
             'date_of_birth' => fake()->dateTimeBetween('-90 years', '-18 years')->format('Y-m-d'),
             'gender' => fake()->randomElement(['Female', 'Male', 'Other']),

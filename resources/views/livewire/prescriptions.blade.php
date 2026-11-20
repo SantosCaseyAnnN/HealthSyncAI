@@ -28,7 +28,7 @@
                 <form wire:submit="savePrescription" class="clinical-form">
                     <div class="clinical-form-grid">
                         <label>Patient
-                            <select wire:model.live="patientId" required><option value="">Select patient</option>@foreach ($patients as $patient)<option value="{{ $patient->id }}">{{ $patient->patient_number }} — {{ $patient->first_name }} {{ $patient->last_name }}</option>@endforeach</select>
+                            <select wire:model.live="patientId" required><option value="">Select patient</option>@foreach ($patients as $patient)<option value="{{ $patient->id }}">{{ $patient->patient_number }} — {{ $patient->full_name }}</option>@endforeach</select>
                             @error('patientId') <small class="clinical-error">{{ $message }}</small> @enderror
                         </label>
                         <label>Related appointment
@@ -59,7 +59,7 @@
                         @forelse ($prescriptions as $prescription)
                             <tr wire:key="prescription-{{ $prescription->id }}">
                                 <td>{{ $prescription->issued_at->format('M d, Y') }}</td>
-                                <td>{{ $prescription->patient->patient_number }} — {{ $prescription->patient->first_name }} {{ $prescription->patient->last_name }}</td>
+                                <td>{{ $prescription->patient->patient_number }} — {{ $prescription->patient->full_name }}</td>
                                 <td><strong>{{ $prescription->medication }}</strong><small class="block">{{ $prescription->strength }}</small></td>
                                 <td>{{ $prescription->dosage }} · {{ $prescription->route }} · {{ $prescription->frequency }} · {{ $prescription->duration }}</td>
                                 <td><span class="status-pill {{ $prescription->status }}-status">{{ str($prescription->status)->title() }}</span></td>

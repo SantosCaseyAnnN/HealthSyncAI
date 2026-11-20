@@ -3448,3 +3448,136 @@ textarea {
         font-size: 16px;
     }
 }
+
+[x-cloak] {
+    display: none !important;
+}
+
+.healthsync-dashboard .mobile-nav-toggle {
+    display: none;
+}
+
+.healthsync-dashboard .mobile-navigation-backdrop {
+    display: block;
+}
+
+@media (max-width: 900px) {
+    .healthsync-dashboard .sidebar {
+        position: fixed;
+        top: 0;
+        right: auto;
+        bottom: 0;
+        left: 0;
+        width: min(var(--hs-sidebar-width), calc(100vw - 56px));
+        min-width: 0;
+        height: 100vh;
+        height: 100dvh;
+        overflow-y: auto;
+        visibility: hidden;
+        border-right: 1px solid var(--hs-border);
+        border-bottom: 0;
+        box-shadow: 12px 0 32px rgba(15, 23, 42, .16);
+        transform: translateX(-105%);
+        transition: transform .2s ease;
+        z-index: 1101;
+    }
+
+    .healthsync-dashboard .sidebar.mobile-open {
+        transform: translateX(0);
+        visibility: visible;
+    }
+
+    .healthsync-dashboard .nav-title {
+        display: block;
+    }
+
+    .healthsync-dashboard .navigation {
+        display: block;
+        padding: 0 7px 12px;
+        overflow: visible;
+    }
+
+    .healthsync-dashboard .nav-item {
+        min-height: 44px;
+        margin-bottom: 3px;
+        padding: 10px 12px;
+    }
+
+    .healthsync-dashboard .sidebar-user {
+        display: flex;
+        margin-top: auto;
+    }
+
+    .healthsync-dashboard .main-content {
+        width: 100%;
+        min-width: 0;
+        margin-left: 0;
+        padding: 24px 18px 56px;
+    }
+
+    .healthsync-dashboard .workspace-topbar {
+        margin: -24px -18px 22px;
+        padding: 11px 18px;
+    }
+
+    .healthsync-dashboard .mobile-nav-toggle {
+        display: inline-grid;
+        width: 40px;
+        height: 40px;
+        flex: 0 0 40px;
+        place-items: center;
+        border: 1px solid #d5deea;
+        border-radius: 10px;
+        background: #fff;
+        color: #192f52;
+        cursor: pointer;
+    }
+
+    .healthsync-dashboard .mobile-nav-toggle svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .healthsync-dashboard .mobile-nav-toggle:focus-visible {
+        outline: 3px solid #60a5fa;
+        outline-offset: 2px;
+    }
+
+    .healthsync-dashboard .mobile-navigation-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1100;
+        background: rgba(15, 23, 42, .48);
+    }
+}
+
+@media (max-width: 520px) {
+    .healthsync-dashboard .main-content {
+        padding: 20px 14px 104px;
+    }
+
+    .healthsync-dashboard .workspace-topbar {
+        margin: -20px -14px 20px;
+        padding: 10px 14px;
+    }
+}
+
+@media (max-width: 360px) {
+    .healthsync-dashboard .main-content {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+    .healthsync-dashboard .workspace-topbar {
+        margin-right: -10px;
+        margin-left: -10px;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .healthsync-dashboard .sidebar {
+        transition: none;
+    }
+}

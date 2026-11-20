@@ -177,7 +177,7 @@ class Appointments extends Component
 
         return view('livewire.appointments', [
             'appointments' => (clone $appointmentsQuery)
-                ->with('patient:id,patient_number,first_name,last_name')
+                ->with('patient:id,patient_number,first_name,middle_name,last_name')
                 ->orderBy('scheduled_at')
                 ->paginate(15),
             'patients' => Patient::query()->orderBy('last_name')->orderBy('first_name')->get(),

@@ -11,6 +11,8 @@ it('renders role-specific clinic dashboard links', function () {
         ->assertSee('Good morning, '.$user->first_name)
         ->assertSee('Patient check-in review')
         ->assertSee('AI assistant')
+        ->assertSee('Toggle navigation')
+        ->assertSee('aria-controls="clinical-navigation"', false)
         ->assertSee('href="'.route('dashboard').'"', false)
         ->assertSee('href="'.route('patients').'"', false)
         ->assertSee('href="'.route('appointments').'"', false)
@@ -18,6 +20,16 @@ it('renders role-specific clinic dashboard links', function () {
         ->assertSee('href="'.route('check-ins.index').'"', false)
         ->assertDontSee('Laboratory')
         ->assertDontSee('Medical Records');
+});
+
+it('renders the mobile navigation toggle on clinic workspace pages', function () {
+    $staff = User::factory()->create();
+
+    $this->actingAs($staff)
+        ->get(route('patients'))
+        ->assertSee('Toggle navigation')
+        ->assertSee('aria-controls="clinical-navigation"', false)
+        ->assertSee('x-data="{ mobileNavigationOpen: false }"', false);
 });
 
 it('shows a pending application message after registration', function () {

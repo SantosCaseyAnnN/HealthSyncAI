@@ -79,7 +79,7 @@
                             @forelse ($pendingCheckIns as $checkIn)
                                 <a wire:key="dashboard-check-in-{{ $checkIn->id }}" href="{{ route('check-ins.index') }}" class="flex items-center justify-between gap-4 py-3">
                                     <span>
-                                        <span class="block text-sm font-semibold text-slate-900">{{ $checkIn->first_name }} {{ $checkIn->last_name }}</span>
+                                        <span class="block text-sm font-semibold text-slate-900">{{ $checkIn->full_name }}</span>
                                         <span class="block text-xs text-slate-500">{{ $checkIn->created_at->format('h:i A') }} · QR check-in</span>
                                     </span>
                                     <span class="text-sm font-semibold text-[#315d96]">Review →</span>
@@ -108,7 +108,7 @@
                         @forelse ($todayQueue as $queueEntry)
                             <article wire:key="dashboard-queue-{{ $queueEntry->id }}" class="rounded-2xl bg-slate-50 p-4">
                                 <p class="text-xs font-semibold text-blue-700">Q-{{ str_pad((string) $queueEntry->queue_number, 3, '0', STR_PAD_LEFT) }}</p>
-                                <p class="mt-2 text-sm font-semibold text-slate-900">{{ $queueEntry->patient->first_name }} {{ $queueEntry->patient->last_name }}</p>
+                                <p class="mt-2 text-sm font-semibold text-slate-900">{{ $queueEntry->patient->full_name }}</p>
                                 <p class="mt-1 text-xs text-slate-500">{{ str($queueEntry->status)->replace('_', ' ')->title() }}</p>
                             </article>
                         @empty

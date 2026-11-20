@@ -10,7 +10,10 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
     </head>
-    <body>
+    <body
+        x-data="{ mobileNavigationOpen: false }"
+        @keydown.escape.window="mobileNavigationOpen = false"
+    >
         {{ $slot }}
 
         @livewireScripts

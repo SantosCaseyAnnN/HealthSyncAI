@@ -113,6 +113,7 @@ it('accepts basic measurements on a signed public check-in and stores it pending
 
     $this->post($signedUrl, [
         'first_name' => 'Jamie',
+        'middle_name' => 'Marie',
         'last_name' => 'Rivera',
         'date_of_birth' => '1994-05-12',
         'gender' => 'Female',
@@ -150,6 +151,7 @@ it('lets new and returning patients submit through the shared public check-in li
     $this->get(route('patient-check-in'))
         ->assertOk()
         ->assertSee('New and returning patients can use this form.')
+        ->assertSee('Middle name')
         ->assertSee('Existing patient number')
         ->assertSee('Basic clinic measurements')
         ->assertSee('name="consent_given"', false);
@@ -157,6 +159,7 @@ it('lets new and returning patients submit through the shared public check-in li
     $this->from(route('patient-check-in'))
         ->post(route('patient-check-in.store'), [
             'first_name' => 'Jamie',
+            'middle_name' => 'Marie',
             'last_name' => 'Rivera',
             'date_of_birth' => '1994-05-12',
             'phone' => '555-0199',
@@ -171,6 +174,7 @@ it('lets new and returning patients submit through the shared public check-in li
     $this->from(route('patient-check-in'))
         ->post(route('patient-check-in.store'), [
             'first_name' => 'Taylor',
+            'middle_name' => 'Ann',
             'last_name' => 'Santos',
             'consent_given' => '1',
         ])
@@ -181,6 +185,7 @@ it('lets new and returning patients submit through the shared public check-in li
         'patient_id' => null,
         'existing_patient_number' => 'PAT-1001',
         'first_name' => 'Jamie',
+        'middle_name' => 'Marie',
         'last_name' => 'Rivera',
         'status' => 'pending',
         'queue_number' => null,
@@ -192,6 +197,7 @@ it('lets new and returning patients submit through the shared public check-in li
         'patient_id' => null,
         'existing_patient_number' => null,
         'first_name' => 'Taylor',
+        'middle_name' => 'Ann',
         'last_name' => 'Santos',
         'status' => 'pending',
         'queue_number' => null,
@@ -205,6 +211,119 @@ it('lets new and returning patients submit through the shared public check-in li
         ->get(route('check-ins.index'))
         ->assertSee('Match & register')
         ->assertSee('Create patient & register');
+});
+
+it('requires a middle name before accepting a public patient check-in', function () {
+    $this->get(route('patient-check-in'))
+        ->assertSee('Middle name');
+
+    $this->from(route('patient-check-in'))
+        ->post(route('patient-check-in.store'), [
+            'first_name' => 'Jamie',
+            'last_name' => 'Rivera',
+            'consent_given' => '1',
+        ])
+        ->assertRedirect(route('patient-check-in'))
+        ->assertSessionHasErrors(['middle_name']);
+
+    $this->assertDatabaseCount('check_ins', 0);
+});
+
+it('flags a matching patient and prevents duplicate patient registration', function () {
+    $staff = User::factory()->create(['role' => User::ROLE_CLINIC_STAFF]);
+    $patient = Patient::factory()->create([
+        'patient_number' => 'PAT-8765',
+        'first_name' => 'Jamie',
+        'middle_name' => null,
+        'last_name' => 'Rivera',
+        'date_of_birth' => '1994-05-12',
+    ]);
+
+    $this->from(route('patient-check-in'))->post(route('patient-check-in.store'), [
+        'first_name' => 'Jamie',
+        'middle_name' => 'Marie',
+        'last_name' => 'Rivera',
+        'date_of_birth' => '1994-05-12',
+        'consent_given' => '1',
+    ])->assertRedirect(route('patient-check-in'));
+
+    $checkIn = CheckIn::query()->firstOrFail();
+    expect($checkIn->possible_match_patient_id)->toBe($patient->id);
+
+    $this->actingAs($staff)
+        ->get(route('check-ins.index'))
+        ->assertSee('Possible existing patient')
+        ->assertSee('PAT-8765');
+
+    Livewire::actingAs($staff)->test(CheckIns::class)
+        ->call('registerAsNewPatient', $checkIn->id)
+        ->assertSee('An existing patient record matches this request')
+        ->call('registerInQueue', $checkIn->id)
+        ->assertHasNoErrors();
+
+    expect($checkIn->fresh())
+        ->patient_id->toBe($patient->id)
+        ->status->toBe('registered');
+    expect($patient->fresh()->middle_name)->toBe('Marie');
+    $this->assertDatabaseCount('patients', 1);
+});
+
+it('does not match patients with different middle names', function () {
+    $staff = User::factory()->create(['role' => User::ROLE_CLINIC_STAFF]);
+    $existingPatient = Patient::factory()->create([
+        'first_name' => 'Jamie',
+        'middle_name' => 'Anne',
+        'last_name' => 'Rivera',
+        'date_of_birth' => '1994-05-12',
+    ]);
+
+    $this->from(route('patient-check-in'))->post(route('patient-check-in.store'), [
+        'first_name' => 'Jamie',
+        'middle_name' => 'Marie',
+        'last_name' => 'Rivera',
+        'date_of_birth' => '1994-05-12',
+        'consent_given' => '1',
+    ])->assertRedirect(route('patient-check-in'));
+
+    $checkIn = CheckIn::query()->firstOrFail();
+    expect($checkIn->possible_match_patient_id)->toBeNull();
+
+    Livewire::actingAs($staff)->test(CheckIns::class)
+        ->call('registerInQueue', $checkIn->id)
+        ->assertHasNoErrors();
+
+    expect($checkIn->fresh()->patient_id)->not->toBe($existingPatient->id);
+    $this->assertDatabaseCount('patients', 2);
+});
+
+it('links a later pending request to a patient created by an earlier request', function () {
+    $staff = User::factory()->create(['role' => User::ROLE_CLINIC_STAFF]);
+    $identity = [
+        'patient_id' => null,
+        'existing_patient_number' => null,
+        'first_name' => 'Jamie',
+        'middle_name' => 'Marie',
+        'last_name' => 'Rivera',
+        'date_of_birth' => '1994-05-12',
+    ];
+    $firstCheckIn = CheckIn::factory()->create($identity);
+    $laterCheckIn = CheckIn::factory()->create($identity);
+
+    Livewire::actingAs($staff)->test(CheckIns::class)
+        ->call('registerAsNewPatient', $firstCheckIn->id)
+        ->assertHasNoErrors();
+
+    $patient = $firstCheckIn->fresh()->patient;
+    expect($laterCheckIn->fresh()->possible_match_patient_id)->toBe($patient->id);
+
+    Livewire::actingAs($staff)->test(CheckIns::class)
+        ->call('registerInQueue', $laterCheckIn->id)
+        ->assertHasNoErrors();
+
+    expect($laterCheckIn->fresh())
+        ->patient_id->toBe($patient->id)
+        ->status->toBe('registered');
+    $this->assertDatabaseCount('patients', 1);
 });
 
 it('shows clinic staff the shareable patient check-in link and QR code', function () {

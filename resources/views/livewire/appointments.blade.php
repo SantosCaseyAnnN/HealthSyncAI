@@ -52,7 +52,7 @@
                             <select wire:model="patientId" required @disabled($editingAppointmentId !== null)>
                                 <option value="">Select a patient</option>
                                 @foreach ($patients as $patient)
-                                    <option value="{{ $patient->id }}">{{ $patient->patient_number }} — {{ $patient->first_name }} {{ $patient->last_name }}</option>
+                                    <option value="{{ $patient->id }}">{{ $patient->patient_number }} — {{ $patient->full_name }}</option>
                                 @endforeach
                             </select>
                             @error('patientId') <small class="clinical-error">{{ $message }}</small> @enderror
@@ -99,7 +99,7 @@
                 <select wire:model.live="patientFilter" class="filter-select">
                     <option value="">All patients</option>
                     @foreach ($patients as $patient)
-                        <option value="{{ $patient->id }}">{{ $patient->first_name }} {{ $patient->last_name }}</option>
+                        <option value="{{ $patient->id }}">{{ $patient->full_name }}</option>
                     @endforeach
                 </select>
             </label>
@@ -124,7 +124,7 @@
                                         {{ $appointment->scheduled_at->format('h:i A') }}
                                         <br><small>{{ $appointment->appointment_code }}</small>
                                     </td>
-                                    <td><a href="{{ route('patients') }}">{{ $appointment->patient->patient_number }} — {{ $appointment->patient->first_name }} {{ $appointment->patient->last_name }}</a></td>
+                                    <td><a href="{{ route('patients') }}">{{ $appointment->patient->patient_number }} — {{ $appointment->patient->full_name }}</a></td>
                                     <td>{{ $appointment->provider }}</td>
                                     <td>{{ $appointment->appointment_type }}</td>
                                     <td><span class="status-pill {{ $appointment->status }}-status">{{ str($appointment->status)->replace('_', ' ')->title() }}</span></td>
@@ -150,7 +150,7 @@
                         <div class="calendar-event" wire:key="calendar-{{ $appointment->id }}">
                             <strong>{{ $appointment->scheduled_at->format('h:i A') }}</strong>
                             <div>
-                                <b>{{ $appointment->patient->first_name }} {{ $appointment->patient->last_name }}</b>
+                                <b>{{ $appointment->patient->full_name }}</b>
                                 <small>{{ $appointment->appointment_type }} · {{ $appointment->provider }}</small>
                             </div>
                             <span class="status-pill {{ $appointment->status }}-status">{{ str($appointment->status)->replace('_', ' ')->title() }}</span>

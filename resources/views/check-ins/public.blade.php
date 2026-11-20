@@ -24,6 +24,10 @@
                         <input name="first_name" value="{{ old('first_name') }}" required maxlength="100" autocomplete="given-name" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
                         @error('first_name') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
                     </label>
+                    <label class="text-sm font-medium text-slate-700">Middle name
+                        <input name="middle_name" value="{{ old('middle_name') }}" required maxlength="100" autocomplete="additional-name" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                        @error('middle_name') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
+                    </label>
                     <label class="text-sm font-medium text-slate-700">Last name
                         <input name="last_name" value="{{ old('last_name') }}" required maxlength="100" autocomplete="family-name" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
                         @error('last_name') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror

@@ -31,7 +31,7 @@
                             <select wire:model.live="patientId" required @disabled($editingRecordId !== null)>
                                 <option value="">Select a patient</option>
                                 @foreach ($patients as $patient)
-                                    <option value="{{ $patient->id }}">{{ $patient->patient_number }} — {{ $patient->first_name }} {{ $patient->last_name }}</option>
+                                    <option value="{{ $patient->id }}">{{ $patient->patient_number }} — {{ $patient->full_name }}</option>
                                 @endforeach
                             </select>
                             @error('patientId') <small class="clinical-error">{{ $message }}</small> @enderror
@@ -94,7 +94,7 @@
                 <select wire:model.live="patientFilter" class="filter-select">
                     <option value="">All patients</option>
                     @foreach ($patients as $patient)
-                        <option value="{{ $patient->id }}">{{ $patient->first_name }} {{ $patient->last_name }}</option>
+                        <option value="{{ $patient->id }}">{{ $patient->full_name }}</option>
                     @endforeach
                 </select>
             </label>
@@ -117,7 +117,7 @@
                             <span class="record-avatar">♙</span>
                             <span class="record-patient-info">
                                 <span class="record-patient-top">
-                                    <strong>{{ $record->patient->first_name }} {{ $record->patient->last_name }}</strong>
+                                    <strong>{{ $record->patient->full_name }}</strong>
                                     <small>{{ $record->record_number }}</small>
                                 </span>
                                 <span class="record-updated">{{ $record->title }} · {{ $record->recorded_at->format('M d, Y h:i A') }}</span>
@@ -138,7 +138,7 @@
                             <span class="preview-avatar">♙</span>
                             <div>
                                 <div class="preview-name">
-                                    <strong>{{ $selectedRecord->patient->first_name }} {{ $selectedRecord->patient->last_name }}</strong>
+                                    <strong>{{ $selectedRecord->patient->full_name }}</strong>
                                     <small>{{ $selectedRecord->patient->patient_number }}</small>
                                 </div>
                                 <p>{{ $selectedRecord->title }} · {{ $selectedRecord->record_number }}</p>

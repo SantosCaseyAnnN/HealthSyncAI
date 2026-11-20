@@ -122,6 +122,7 @@ it('creates and updates a patient record', function () {
 
     Livewire::test(Patients::class)
         ->set('firstName', 'Jamie')
+        ->set('middleName', 'Marie')
         ->set('lastName', 'Rivera')
         ->set('dateOfBirth', '1990-04-12')
         ->set('genderInput', 'Other')

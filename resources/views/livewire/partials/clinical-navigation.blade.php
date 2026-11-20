@@ -1,4 +1,18 @@
-<aside class="sidebar">
+<div
+    class="mobile-navigation-backdrop"
+    x-cloak
+    x-show="mobileNavigationOpen"
+    x-transition.opacity
+    @click="mobileNavigationOpen = false"
+    aria-hidden="true"
+></div>
+
+<aside
+    id="clinical-navigation"
+    class="sidebar"
+    :class="{ 'mobile-open': mobileNavigationOpen }"
+    aria-label="Clinic navigation"
+>
     <div class="brand">
         <span class="brand-mark" aria-hidden="true">H</span>
         <div>
@@ -10,7 +24,7 @@
 
     <div class="nav-title">WORKSPACE</div>
 
-    <nav class="navigation">
+    <nav class="navigation" @click="mobileNavigationOpen = false">
         @if (auth()->user()->isAdmin())
             <a href="{{ route('admin.accounts') }}" @class(['nav-item', 'active' => $active === 'admin'])>
                 <span aria-hidden="true">▤</span> User accounts

@@ -45,15 +45,23 @@
                             <tr wire:key="check-in-{{ $checkIn->id }}">
                                 <td>{{ $checkIn->created_at->format('M d, h:i A') }}</td>
                                 <td>
-                                    <strong>{{ $checkIn->first_name }} {{ $checkIn->last_name }}</strong>
+                                    <strong>{{ $checkIn->full_name }}</strong>
                                     <small class="block">{{ $checkIn->date_of_birth?->format('M d, Y') ?: 'Birth date not provided' }}</small>
                                     @if ($checkIn->patient)
-                                        <small class="block">Linked: {{ $checkIn->patient->patient_number }} — {{ $checkIn->patient->first_name }} {{ $checkIn->patient->last_name }}</small>
+                                        <small class="block">Linked: {{ $checkIn->patient->patient_number }} — {{ $checkIn->patient->full_name }}</small>
+                                    @elseif ($checkIn->possibleMatchPatient)
+                                        <small class="mt-1 block rounded-md border border-amber-200 bg-amber-50 p-2 text-amber-900" role="alert">
+                                            Possible existing patient. A new request was submitted for this patient:
+                                            <a class="font-semibold underline" href="{{ route('patients.show', $checkIn->possibleMatchPatient) }}">{{ $checkIn->possibleMatchPatient->patient_number }} — {{ $checkIn->possibleMatchPatient->full_name }}</a>
+                                            @if ($checkIn->existing_patient_number)
+                                                <span class="block">Number entered: {{ $checkIn->existing_patient_number }}. Verify the match before registration.</span>
+                                            @endif
+                                        </small>
                                     @elseif ($checkIn->existing_patient_number)
                                         <small class="block">
                                             Existing number: {{ $checkIn->existing_patient_number }}
                                             @if ($checkIn->requestedPatient)
-                                                · Possible match: <a class="text-blue-700 underline" href="{{ route('patients.show', $checkIn->requestedPatient) }}">{{ $checkIn->requestedPatient->first_name }} {{ $checkIn->requestedPatient->last_name }}</a>
+                                                · Possible match: <a class="text-blue-700 underline" href="{{ route('patients.show', $checkIn->requestedPatient) }}">{{ $checkIn->requestedPatient->full_name }}</a>
                                             @else
                                                 · No matching record found
                                             @endif
@@ -87,10 +95,9 @@
                                         <div class="flex flex-col gap-2">
                                             @if ($checkIn->patient)
                                                 <button type="button" wire:click="registerInQueue({{ $checkIn->id }})" class="small-outline-button">Verify &amp; register</button>
+                                            @elseif ($checkIn->possibleMatchPatient || $checkIn->requestedPatient)
+                                                <button type="button" wire:click="registerInQueue({{ $checkIn->id }})" class="small-outline-button">Match &amp; register</button>
                                             @elseif ($checkIn->existing_patient_number)
-                                                @if ($checkIn->requestedPatient)
-                                                    <button type="button" wire:click="registerInQueue({{ $checkIn->id }})" class="small-outline-button">Match &amp; register</button>
-                                                @endif
                                                 <button type="button" wire:click="registerAsNewPatient({{ $checkIn->id }})" class="small-outline-button">Register as new patient</button>
                                             @else
                                                 <button type="button" wire:click="registerInQueue({{ $checkIn->id }})" class="small-outline-button">Create patient &amp; register</button>
