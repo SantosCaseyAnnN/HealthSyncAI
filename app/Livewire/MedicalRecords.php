@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\AuthorizesClinicStaff;
 use App\Models\Appointment;
 use App\Models\MedicalRecord;
 use App\Models\Patient;
@@ -15,6 +16,7 @@ use Livewire\WithPagination;
 
 class MedicalRecords extends Component
 {
+    use AuthorizesClinicStaff;
     use WithPagination;
 
     public string $search = '';
@@ -190,7 +192,7 @@ class MedicalRecords extends Component
     private function recordsQuery(): Builder
     {
         return MedicalRecord::query()
-            ->with(['patient', 'appointment', 'labOrders'])
+            ->with(['patient', 'appointment'])
             ->when($this->patientFilter, fn ($query) => $query->where('patient_id', $this->patientFilter))
             ->when($this->search !== '', function ($query) {
                 $search = '%'.$this->search.'%';
@@ -201,6 +203,7 @@ class MedicalRecords extends Component
                         ->orWhereHas('patient', function ($query) use ($search) {
                             $query->where('patient_number', 'like', $search)
                                 ->orWhere('first_name', 'like', $search)
+                                ->orWhere('middle_name', 'like', $search)
                                 ->orWhere('last_name', 'like', $search);
                         });
                 });

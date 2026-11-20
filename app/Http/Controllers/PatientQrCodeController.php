@@ -13,11 +13,20 @@ class PatientQrCodeController extends Controller
 {
     public function __invoke(Patient $patient): Response
     {
+        return $this->qrCodeResponse(route('patient-check-in'));
+    }
+
+    public function publicCheckIn(): Response
+    {
+        return $this->qrCodeResponse(route('patient-check-in'));
+    }
+
+    private function qrCodeResponse(string $url): Response
+    {
         $renderer = new ImageRenderer(new RendererStyle(256), new SvgImageBackEnd);
         $writer = new Writer($renderer);
-        $profileUrl = route('patients.show', $patient);
 
-        return response($writer->writeString($profileUrl), 200, [
+        return response($writer->writeString($url), 200, [
             'Content-Type' => 'image/svg+xml',
             'Cache-Control' => 'private, no-store',
         ]);

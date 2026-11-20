@@ -2,10 +2,12 @@
     @include('livewire.partials.clinical-navigation', ['active' => 'patients'])
 
     <main class="main-content">
+        @include('livewire.partials.workspace-topbar', ['section' => 'Clinic / Patient records'])
+
         <div class="page-heading">
             <div>
                 <h2>EHR Profile</h2>
-                <p>{{ $profilePatient->patient_number }} · {{ $profilePatient->first_name }} {{ $profilePatient->last_name }}</p>
+                <p>{{ $profilePatient->patient_number }} · {{ $profilePatient->full_name }}</p>
             </div>
             <a class="small-outline-button" href="{{ route('patients') }}">Back to Patients</a>
         </div>
@@ -22,7 +24,7 @@
             <div class="panel-heading">
                 <div>
                     <strong>Patient information</strong>
-                    <small>Linked appointments {{ $profilePatient->appointments_count }} · records {{ $profilePatient->medical_records_count }} · labs {{ $profilePatient->lab_orders_count }}</small>
+                    <small>Linked appointments {{ $profilePatient->appointments_count }} · records {{ $profilePatient->medical_records_count }}</small>
                 </div>
                 <a href="{{ route('patients.qr', $profilePatient) }}" target="_blank" rel="noopener">Open patient QR</a>
             </div>
@@ -33,16 +35,26 @@
                     height="160"
                     alt="QR code for patient {{ $profilePatient->patient_number }}"
                 >
-                <p>Scanning the code opens this profile and requires a signed-in account. The QR contains only the profile URL.</p>
+                <p>This QR opens the public check-in form, where new and returning patients can submit their information without signing in.</p>
                 <div class="clinical-form-grid">
                     <div><strong>Date of birth</strong><p>{{ $profilePatient->date_of_birth?->format('M j, Y') ?? 'Not recorded' }}</p></div>
                     <div><strong>Gender</strong><p>{{ $profilePatient->gender ?? 'Not recorded' }}</p></div>
+                    <div><strong>Contact</strong><p>{{ $profilePatient->phone ?? 'Not recorded' }}{{ $profilePatient->email ? ' · '.$profilePatient->email : '' }}</p></div>
+                    <div><strong>Address</strong><p>{{ $profilePatient->address ?? 'Not recorded' }}</p></div>
                     <div><strong>Blood type</strong><p>{{ $profilePatient->blood_type ?? 'Not recorded' }}</p></div>
                     <div><strong>Allergies</strong><p>{{ $profilePatient->allergies ?? 'None recorded' }}</p></div>
                     <div><strong>Medical history</strong><p>{{ $profilePatient->medical_history ?? 'Not recorded' }}</p></div>
                     <div><strong>Family history</strong><p>{{ $profilePatient->family_history ?? 'Not recorded' }}</p></div>
                     <div><strong>Emergency contact</strong><p>{{ $profilePatient->emergency_contact_name ?? 'Not recorded' }}{{ $profilePatient->emergency_contact_relationship ? ' · '.$profilePatient->emergency_contact_relationship : '' }}</p></div>
                     <div><strong>Emergency phone</strong><p>{{ $profilePatient->emergency_contact_phone ?? 'Not recorded' }}</p></div>
+                    <div><strong>Height</strong><p>{{ $profilePatient->height_cm !== null ? $profilePatient->height_cm.' cm' : 'Not recorded' }}</p></div>
+                    <div><strong>Weight</strong><p>{{ $profilePatient->weight_kg !== null ? $profilePatient->weight_kg.' kg' : 'Not recorded' }}</p></div>
+                    <div><strong>BMI</strong><p>{{ $profilePatient->bmi ?? 'Not recorded' }}</p></div>
+                    <div><strong>Blood pressure</strong><p>{{ $profilePatient->blood_pressure ?? 'Not recorded' }}</p></div>
+                    <div><strong>Temperature</strong><p>{{ $profilePatient->temperature_c !== null ? $profilePatient->temperature_c.' C' : 'Not recorded' }}</p></div>
+                    <div><strong>Pulse</strong><p>{{ $profilePatient->pulse_rate !== null ? $profilePatient->pulse_rate.' bpm' : 'Not recorded' }}</p></div>
+                    <div><strong>Respiratory rate</strong><p>{{ $profilePatient->respiratory_rate !== null ? $profilePatient->respiratory_rate.' breaths/min' : 'Not recorded' }}</p></div>
+                    <div><strong>Oxygen saturation</strong><p>{{ $profilePatient->oxygen_saturation !== null ? $profilePatient->oxygen_saturation.'%' : 'Not recorded' }}</p></div>
                 </div>
             </div>
         </section>

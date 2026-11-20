@@ -2,6 +2,8 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\AuthorizesClinicStaff;
+use App\Models\CheckIn as PatientCheckIn;
 use App\Models\Patient;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
@@ -11,19 +13,20 @@ use Livewire\WithPagination;
 
 class Patients extends Component
 {
+    use AuthorizesClinicStaff;
     use WithPagination;
 
     public string $search = '';
 
-    public string $status = '';
-
-    public string $gender = '';
+    public ?int $selectedPatientId = null;
 
     public bool $showForm = false;
 
     public ?int $editingPatientId = null;
 
     public string $firstName = '';
+
+    public string $middleName = '';
 
     public string $lastName = '';
 
@@ -53,17 +56,25 @@ class Patients extends Component
 
     public string $emergencyContactPhone = '';
 
+    public string $address = '';
+
+    public string $heightCm = '';
+
+    public string $weightKg = '';
+
+    public string $bmi = '';
+
+    public string $bloodPressure = '';
+
+    public string $temperatureC = '';
+
+    public string $pulseRate = '';
+
+    public string $respiratoryRate = '';
+
+    public string $oxygenSaturation = '';
+
     public function updatedSearch(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatedStatus(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatedGender(): void
     {
         $this->resetPage();
     }
@@ -74,12 +85,19 @@ class Patients extends Component
         $this->showForm = true;
     }
 
+    public function selectPatient(int $patientId): void
+    {
+        $this->selectedPatientId = Patient::query()->findOrFail($patientId)->id;
+    }
+
     public function editPatient(int $patientId): void
     {
         $patient = Patient::findOrFail($patientId);
 
+        $this->selectedPatientId = $patient->id;
         $this->editingPatientId = $patient->id;
         $this->firstName = $patient->first_name;
+        $this->middleName = $patient->middle_name ?? '';
         $this->lastName = $patient->last_name;
         $this->dateOfBirth = $patient->date_of_birth?->toDateString() ?? '';
         $this->genderInput = $patient->gender ?? '';
@@ -94,6 +112,15 @@ class Patients extends Component
         $this->emergencyContactName = $patient->emergency_contact_name ?? '';
         $this->emergencyContactRelationship = $patient->emergency_contact_relationship ?? '';
         $this->emergencyContactPhone = $patient->emergency_contact_phone ?? '';
+        $this->address = $patient->address ?? '';
+        $this->heightCm = $patient->height_cm !== null ? (string) $patient->height_cm : '';
+        $this->weightKg = $patient->weight_kg !== null ? (string) $patient->weight_kg : '';
+        $this->bmi = $patient->bmi !== null ? (string) $patient->bmi : '';
+        $this->bloodPressure = $patient->blood_pressure ?? '';
+        $this->temperatureC = $patient->temperature_c !== null ? (string) $patient->temperature_c : '';
+        $this->pulseRate = $patient->pulse_rate !== null ? (string) $patient->pulse_rate : '';
+        $this->respiratoryRate = $patient->respiratory_rate !== null ? (string) $patient->respiratory_rate : '';
+        $this->oxygenSaturation = $patient->oxygen_saturation !== null ? (string) $patient->oxygen_saturation : '';
         $this->showForm = true;
     }
 
@@ -101,6 +128,7 @@ class Patients extends Component
     {
         $validated = $this->validate([
             'firstName' => ['required', 'string', 'max:100'],
+            'middleName' => ['required', 'string', 'max:100'],
             'lastName' => ['required', 'string', 'max:100'],
             'dateOfBirth' => ['nullable', 'date', 'before_or_equal:today'],
             'genderInput' => ['nullable', Rule::in(['Female', 'Male', 'Other'])],
@@ -120,11 +148,42 @@ class Patients extends Component
             'emergencyContactName' => ['nullable', 'string', 'max:150'],
             'emergencyContactRelationship' => ['nullable', 'string', 'max:100'],
             'emergencyContactPhone' => ['nullable', 'string', 'max:30'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'heightCm' => ['nullable', 'numeric', 'min:30', 'max:250'],
+            'weightKg' => ['nullable', 'numeric', 'min:1', 'max:500'],
+            'bmi' => ['nullable', 'numeric', 'min:5', 'max:100'],
+            'bloodPressure' => ['nullable', 'string', 'max:20'],
+            'temperatureC' => ['nullable', 'numeric', 'min:25', 'max:45'],
+            'pulseRate' => ['nullable', 'integer', 'min:20', 'max:300'],
+            'respiratoryRate' => ['nullable', 'integer', 'min:4', 'max:80'],
+            'oxygenSaturation' => ['nullable', 'numeric', 'min:50', 'max:100'],
         ]);
 
+        $firstName = trim($validated['firstName']);
+        $middleName = trim($validated['middleName']);
+        $lastName = trim($validated['lastName']);
+
+        if ($validated['dateOfBirth'] !== null && $validated['dateOfBirth'] !== '') {
+            $matchingPatient = Patient::query()
+                ->matchingIdentity($firstName, $middleName, $lastName, $validated['dateOfBirth'])
+                ->when($this->editingPatientId !== null, fn ($query) => $query->where('id', '!=', $this->editingPatientId))
+                ->orderBy('id')
+                ->first();
+
+            if ($matchingPatient !== null) {
+                $this->addError(
+                    'middleName',
+                    "A patient with this name and date of birth already has record {$matchingPatient->patient_number}. Review that record instead of creating a duplicate.",
+                );
+
+                return;
+            }
+        }
+
         $attributes = [
-            'first_name' => $validated['firstName'],
-            'last_name' => $validated['lastName'],
+            'first_name' => $firstName,
+            'middle_name' => $middleName,
+            'last_name' => $lastName,
             'date_of_birth' => $validated['dateOfBirth'] ?: null,
             'gender' => $validated['genderInput'] ?: null,
             'phone' => $validated['phone'] ?: null,
@@ -138,6 +197,15 @@ class Patients extends Component
             'emergency_contact_name' => $validated['emergencyContactName'] ?: null,
             'emergency_contact_relationship' => $validated['emergencyContactRelationship'] ?: null,
             'emergency_contact_phone' => $validated['emergencyContactPhone'] ?: null,
+            'address' => $validated['address'] ?: null,
+            'height_cm' => $validated['heightCm'] !== null && $validated['heightCm'] !== '' ? $validated['heightCm'] : null,
+            'weight_kg' => $validated['weightKg'] !== null && $validated['weightKg'] !== '' ? $validated['weightKg'] : null,
+            'bmi' => $validated['bmi'] !== null && $validated['bmi'] !== '' ? $validated['bmi'] : null,
+            'blood_pressure' => $validated['bloodPressure'] ?: null,
+            'temperature_c' => $validated['temperatureC'] !== null && $validated['temperatureC'] !== '' ? $validated['temperatureC'] : null,
+            'pulse_rate' => $validated['pulseRate'] !== null && $validated['pulseRate'] !== '' ? $validated['pulseRate'] : null,
+            'respiratory_rate' => $validated['respiratoryRate'] !== null && $validated['respiratoryRate'] !== '' ? $validated['respiratoryRate'] : null,
+            'oxygen_saturation' => $validated['oxygenSaturation'] !== null && $validated['oxygenSaturation'] !== '' ? $validated['oxygenSaturation'] : null,
         ];
 
         if ($this->editingPatientId === null) {
@@ -146,12 +214,17 @@ class Patients extends Component
                 ...$attributes,
             ]);
 
+            $this->selectedPatientId = $patient->id;
             session()->flash('status', "Patient {$patient->patient_number} was created.");
         } else {
-            Patient::findOrFail($this->editingPatientId)->update($attributes);
+            $patient = Patient::findOrFail($this->editingPatientId);
+            $patient->update($attributes);
+            $this->selectedPatientId = $patient->id;
 
             session()->flash('status', 'Patient details were updated.');
         }
+
+        PatientCheckIn::linkPendingDuplicates($patient);
 
         $this->resetForm();
         $this->resetPage();
@@ -165,25 +238,32 @@ class Patients extends Component
     public function render(): View
     {
         $patients = Patient::query()
-            ->withCount(['appointments', 'medicalRecords', 'labOrders'])
+            ->with(['latestMedicalRecord' => fn ($query) => $query->select(
+                'medical_records.id',
+                'medical_records.patient_id',
+                'medical_records.title',
+                'medical_records.recorded_at',
+            )])
             ->when($this->search !== '', function ($query) {
                 $search = '%'.$this->search.'%';
 
                 $query->where(function ($query) use ($search) {
                     $query->where('patient_number', 'like', $search)
                         ->orWhere('first_name', 'like', $search)
+                        ->orWhere('middle_name', 'like', $search)
                         ->orWhere('last_name', 'like', $search)
                         ->orWhere('phone', 'like', $search);
                 });
             })
-            ->when($this->status !== '', fn ($query) => $query->where('status', $this->status))
-            ->when($this->gender !== '', fn ($query) => $query->where('gender', $this->gender))
             ->orderBy('last_name')
             ->orderBy('first_name')
-            ->paginate(15);
+            ->paginate(6);
+        $selectedPatient = $patients->getCollection()->firstWhere('id', $this->selectedPatientId)
+            ?? $patients->first();
 
         return view('livewire.patients', [
             'filteredPatients' => $patients,
+            'selectedPatient' => $selectedPatient,
         ]);
     }
 
@@ -192,6 +272,7 @@ class Patients extends Component
         $this->reset(
             'editingPatientId',
             'firstName',
+            'middleName',
             'lastName',
             'dateOfBirth',
             'genderInput',
@@ -205,6 +286,15 @@ class Patients extends Component
             'emergencyContactName',
             'emergencyContactRelationship',
             'emergencyContactPhone',
+            'address',
+            'heightCm',
+            'weightKg',
+            'bmi',
+            'bloodPressure',
+            'temperatureC',
+            'pulseRate',
+            'respiratoryRate',
+            'oxygenSaturation',
         );
         $this->patientStatus = 'active';
         $this->showForm = false;

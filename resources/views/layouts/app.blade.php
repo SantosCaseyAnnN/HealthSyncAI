@@ -17,11 +17,17 @@
         <!-- Styles -->
         @livewireStyles
     </head>
-    <body class="font-sans antialiased">
+    <body
+        class="font-sans antialiased"
+        x-data="{ mobileNavigationOpen: false }"
+        @keydown.escape.window="mobileNavigationOpen = false"
+    >
         <x-banner />
 
         <div class="min-h-screen bg-gray-100">
-            @livewire('navigation-menu')
+            @unless (request()->routeIs('dashboard'))
+                @livewire('navigation-menu')
+            @endunless
 
             <!-- Page Heading -->
             @if (isset($header))

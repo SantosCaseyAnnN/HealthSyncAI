@@ -2,6 +2,8 @@
     @include('livewire.partials.clinical-navigation', ['active' => 'medical-records'])
 
     <main class="main-content medical-content">
+        @include('livewire.partials.workspace-topbar', ['section' => 'Clinic / Patient records'])
+
         <div class="page-heading">
             <div>
                 <h2>Medical Records</h2>
@@ -29,7 +31,7 @@
                             <select wire:model.live="patientId" required @disabled($editingRecordId !== null)>
                                 <option value="">Select a patient</option>
                                 @foreach ($patients as $patient)
-                                    <option value="{{ $patient->id }}">{{ $patient->patient_number }} — {{ $patient->first_name }} {{ $patient->last_name }}</option>
+                                    <option value="{{ $patient->id }}">{{ $patient->patient_number }} — {{ $patient->full_name }}</option>
                                 @endforeach
                             </select>
                             @error('patientId') <small class="clinical-error">{{ $message }}</small> @enderror
@@ -92,7 +94,7 @@
                 <select wire:model.live="patientFilter" class="filter-select">
                     <option value="">All patients</option>
                     @foreach ($patients as $patient)
-                        <option value="{{ $patient->id }}">{{ $patient->first_name }} {{ $patient->last_name }}</option>
+                        <option value="{{ $patient->id }}">{{ $patient->full_name }}</option>
                     @endforeach
                 </select>
             </label>
@@ -115,7 +117,7 @@
                             <span class="record-avatar">♙</span>
                             <span class="record-patient-info">
                                 <span class="record-patient-top">
-                                    <strong>{{ $record->patient->first_name }} {{ $record->patient->last_name }}</strong>
+                                    <strong>{{ $record->patient->full_name }}</strong>
                                     <small>{{ $record->record_number }}</small>
                                 </span>
                                 <span class="record-updated">{{ $record->title }} · {{ $record->recorded_at->format('M d, Y h:i A') }}</span>
@@ -136,7 +138,7 @@
                             <span class="preview-avatar">♙</span>
                             <div>
                                 <div class="preview-name">
-                                    <strong>{{ $selectedRecord->patient->first_name }} {{ $selectedRecord->patient->last_name }}</strong>
+                                    <strong>{{ $selectedRecord->patient->full_name }}</strong>
                                     <small>{{ $selectedRecord->patient->patient_number }}</small>
                                 </div>
                                 <p>{{ $selectedRecord->title }} · {{ $selectedRecord->record_number }}</p>
@@ -173,20 +175,6 @@
                         </div>
                     </div>
 
-                    <div class="attached-documents">
-                        <div class="documents-heading">
-                            <strong>Related Laboratory Orders</strong>
-                            <a href="{{ route('laboratory', ['patient' => $selectedRecord->patient_id]) }}">Open laboratory</a>
-                        </div>
-                        @forelse ($selectedRecord->labOrders as $labOrder)
-                            <div class="document-item">
-                                <span class="pdf-icon">▤</span>
-                                <div><strong>{{ $labOrder->test_name }} · {{ $labOrder->order_number }}</strong><small>{{ str($labOrder->status)->replace('_', ' ')->title() }}</small></div>
-                            </div>
-                        @empty
-                            <p class="schedule-note">No laboratory orders are linked to this record.</p>
-                        @endforelse
-                    </div>
                 </section>
             @else
                 <section class="record-preview no-selection"><p>Select a record to view its patient and clinical details.</p></section>

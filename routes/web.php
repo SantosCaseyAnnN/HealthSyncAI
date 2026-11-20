@@ -1,11 +1,19 @@
 <?php
 
+use App\Http\Controllers\PatientCheckInController;
 use App\Http\Controllers\PatientQrCodeController;
+use App\Livewire\AdminUsers;
 use App\Livewire\Appointments;
-use App\Livewire\Laboratory;
+use App\Livewire\CheckIns;
 use App\Livewire\MedicalRecords;
 use App\Livewire\PatientProfile;
 use App\Livewire\Patients;
+use App\Livewire\Prescriptions;
+use App\Models\Appointment;
+use App\Models\CheckIn;
+use App\Models\Patient;
+use App\Models\Prescription;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,20 +22,87 @@ Route::get('/', function () {
 
 Route::view('/login', 'auth.login')->name('login');
 Route::view('/register', 'auth.register')->name('register');
+Route::get('/patient-check-in', [PatientCheckInController::class, 'showPublic'])
+    ->name('patient-check-in');
+Route::post('/patient-check-in', [PatientCheckInController::class, 'storePublic'])
+    ->middleware('throttle:10,1')
+    ->name('patient-check-in.store');
+Route::get('/check-in/{patient}', [PatientCheckInController::class, 'show'])
+    ->middleware('signed')
+    ->name('check-ins.show');
+Route::post('/check-in/{patient}', [PatientCheckInController::class, 'store'])
+    ->middleware(['signed', 'throttle:10,1'])
+    ->name('check-ins.store');
 
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        $user = request()->user();
+        $stats = [];
+        $pendingCheckIns = collect();
+        $todayQueue = collect();
+
+        if ($user->hasWorkspaceAccess() && ($user->isClinicStaff() || $user->isAdmin())) {
+            $clinicStats = [
+                'Patients' => Patient::query()->count(),
+                "Today's appointments" => Appointment::query()->whereDate('scheduled_at', today())->count(),
+                'Check-ins to review' => CheckIn::query()->where('status', 'pending')->count(),
+                'Active prescriptions' => Prescription::query()->where('status', 'active')->count(),
+            ];
+            $stats = $user->isAdmin()
+                ? [
+                    'Patients in clinic records' => $clinicStats['Patients'],
+                    "Today's appointments" => $clinicStats["Today's appointments"],
+                    'Check-ins awaiting review' => $clinicStats['Check-ins to review'],
+                    'Clinic staff accounts' => User::query()->where('role', User::ROLE_CLINIC_STAFF)->count(),
+                ]
+                : $clinicStats;
+
+            if ($user->isClinicStaff()) {
+                $pendingCheckIns = CheckIn::query()
+                    ->with('patient:id,patient_number,first_name,last_name')
+                    ->where('status', 'pending')
+                    ->latest()
+                    ->limit(4)
+                    ->get();
+                $todayQueue = CheckIn::query()
+                    ->with('patient:id,patient_number,first_name,last_name')
+                    ->whereIn('status', ['registered', 'in_consultation'])
+                    ->whereDate('check_in_date', today())
+                    ->orderBy('queue_number')
+                    ->limit(5)
+                    ->get();
+            }
+        }
+        $lastQueueNumber = CheckIn::query()
+            ->whereIn('status', ['registered', 'in_consultation'])
+            ->whereDate('check_in_date', today())
+            ->max('queue_number');
+
+        return view('dashboard', [
+            'stats' => $stats,
+            'pendingCheckIns' => $pendingCheckIns,
+            'todayQueue' => $todayQueue,
+            'estimatedQueueWait' => max(0, ((int) $lastQueueNumber) - 1) * 15,
+            'notifications' => $user->unreadNotifications()->latest()->limit(5)->get(),
+        ]);
     })->name('dashboard');
 
-    Route::get('/patients', Patients::class)->name('patients');
-    Route::get('/patients/{patient}', PatientProfile::class)->name('patients.show');
-    Route::get('/patients/{patient}/qr', PatientQrCodeController::class)->name('patients.qr');
-    Route::get('/appointments', Appointments::class)->name('appointments');
-    Route::get('/medical-records', MedicalRecords::class)
-        ->name('medical-records');
-    Route::get('/laboratory', Laboratory::class)->name('laboratory');
+    Route::middleware('role:clinic_staff')->group(function () {
+        Route::get('/patients', Patients::class)->name('patients');
+        Route::get('/patients/{patient}', PatientProfile::class)->name('patients.show');
+        Route::get('/patients/{patient}/qr', PatientQrCodeController::class)->name('patients.qr');
+        Route::get('/appointments', Appointments::class)->name('appointments');
+        Route::get('/medical-records', MedicalRecords::class)->name('medical-records');
+        Route::get('/prescriptions', Prescriptions::class)->name('prescriptions');
+        Route::get('/check-ins', CheckIns::class)->name('check-ins.index');
+        Route::get('/patient-check-in/qr', [PatientQrCodeController::class, 'publicCheckIn'])
+            ->name('patient-check-in.qr');
+    });
+
+    Route::get('/admin/accounts', AdminUsers::class)
+        ->middleware('role:admin')
+        ->name('admin.accounts');
 });

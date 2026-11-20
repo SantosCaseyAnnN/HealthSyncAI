@@ -2,9 +2,11 @@
     @include('livewire.partials.clinical-navigation', ['active' => 'appointments'])
 
     <main class="main-content">
+        @include('livewire.partials.workspace-topbar', ['section' => 'Clinic / Appointments & queue'])
+
         <div class="page-heading appointment-heading">
             <div>
-                <h2>Appointments</h2>
+                <h2>Appointments &amp; queue</h2>
                 <p>Schedule and monitor patient appointments.</p>
             </div>
             <div class="heading-actions">
@@ -50,7 +52,7 @@
                             <select wire:model="patientId" required @disabled($editingAppointmentId !== null)>
                                 <option value="">Select a patient</option>
                                 @foreach ($patients as $patient)
-                                    <option value="{{ $patient->id }}">{{ $patient->patient_number }} — {{ $patient->first_name }} {{ $patient->last_name }}</option>
+                                    <option value="{{ $patient->id }}">{{ $patient->patient_number }} — {{ $patient->full_name }}</option>
                                 @endforeach
                             </select>
                             @error('patientId') <small class="clinical-error">{{ $message }}</small> @enderror
@@ -97,7 +99,7 @@
                 <select wire:model.live="patientFilter" class="filter-select">
                     <option value="">All patients</option>
                     @foreach ($patients as $patient)
-                        <option value="{{ $patient->id }}">{{ $patient->first_name }} {{ $patient->last_name }}</option>
+                        <option value="{{ $patient->id }}">{{ $patient->full_name }}</option>
                     @endforeach
                 </select>
             </label>
@@ -122,13 +124,12 @@
                                         {{ $appointment->scheduled_at->format('h:i A') }}
                                         <br><small>{{ $appointment->appointment_code }}</small>
                                     </td>
-                                    <td><a href="{{ route('patients') }}">{{ $appointment->patient->patient_number }} — {{ $appointment->patient->first_name }} {{ $appointment->patient->last_name }}</a></td>
+                                    <td><a href="{{ route('patients') }}">{{ $appointment->patient->patient_number }} — {{ $appointment->patient->full_name }}</a></td>
                                     <td>{{ $appointment->provider }}</td>
                                     <td>{{ $appointment->appointment_type }}</td>
                                     <td><span class="status-pill {{ $appointment->status }}-status">{{ str($appointment->status)->replace('_', ' ')->title() }}</span></td>
                                     <td>
                                         <a href="{{ route('medical-records', ['patient' => $appointment->patient_id]) }}">Records ({{ $appointment->medical_records_count }})</a>
-                                        <a href="{{ route('laboratory', ['patient' => $appointment->patient_id]) }}">Labs ({{ $appointment->lab_orders_count }})</a>
                                     </td>
                                     <td>
                                         <button class="small-outline-button" type="button" wire:click="editAppointment({{ $appointment->id }})">Edit</button>
@@ -149,7 +150,7 @@
                         <div class="calendar-event" wire:key="calendar-{{ $appointment->id }}">
                             <strong>{{ $appointment->scheduled_at->format('h:i A') }}</strong>
                             <div>
-                                <b>{{ $appointment->patient->first_name }} {{ $appointment->patient->last_name }}</b>
+                                <b>{{ $appointment->patient->full_name }}</b>
                                 <small>{{ $appointment->appointment_type }} · {{ $appointment->provider }}</small>
                             </div>
                             <span class="status-pill {{ $appointment->status }}-status">{{ str($appointment->status)->replace('_', ' ')->title() }}</span>

@@ -1,7 +1,9 @@
 <?php
 
+use App\Livewire\CheckIns as CheckInsWorkspace;
 use App\Livewire\PatientProfile;
 use App\Livewire\Patients;
+use App\Models\CheckIn;
 use App\Models\Patient;
 use App\Models\PatientConsent;
 use App\Models\PatientVaccination;
@@ -23,6 +25,7 @@ it('stores structured patient history and emergency contact information', functi
 
     Livewire::test(Patients::class)
         ->set('firstName', 'Jamie')
+        ->set('middleName', 'Marie')
         ->set('lastName', 'Rivera')
         ->set('medicalHistory', 'DEMO ONLY: Example history.')
         ->set('familyHistory', 'DEMO ONLY: Example family history.')
@@ -48,6 +51,69 @@ it('stores structured patient history and emergency contact information', functi
         ->assertOk()
         ->assertSee('EHR Profile')
         ->assertSee('DEMO ONLY: Example history.');
+});
+
+it('requires a middle name when a clinic staff member registers a patient', function () {
+    $this->actingAs(User::factory()->create());
+
+    Livewire::test(Patients::class)
+        ->set('firstName', 'Jamie')
+        ->set('lastName', 'Rivera')
+        ->call('savePatient')
+        ->assertHasErrors(['middleName' => 'required']);
+
+    $this->assertDatabaseCount('patients', 0);
+});
+
+it('does not create a second patient record for the same full name and birth date', function () {
+    $this->actingAs(User::factory()->create());
+    Patient::factory()->create([
+        'patient_number' => 'PAT-4321',
+        'first_name' => 'Jamie',
+        'middle_name' => 'Marie',
+        'last_name' => 'Rivera',
+        'date_of_birth' => '1994-05-12',
+    ]);
+
+    Livewire::test(Patients::class)
+        ->set('firstName', 'Jamie')
+        ->set('middleName', 'Marie')
+        ->set('lastName', 'Rivera')
+        ->set('dateOfBirth', '1994-05-12')
+        ->call('savePatient')
+        ->assertHasErrors(['middleName']);
+
+    $this->assertDatabaseCount('patients', 1);
+});
+
+it('flags pending check-ins when clinic staff adds a matching patient record', function () {
+    $staff = User::factory()->create();
+    $checkIn = CheckIn::factory()->create([
+        'patient_id' => null,
+        'first_name' => 'Jamie',
+        'middle_name' => 'Marie',
+        'last_name' => 'Rivera',
+        'date_of_birth' => '1994-05-12',
+    ]);
+
+    Livewire::actingAs($staff)->test(Patients::class)
+        ->set('firstName', 'Jamie')
+        ->set('middleName', 'Marie')
+        ->set('lastName', 'Rivera')
+        ->set('dateOfBirth', '1994-05-12')
+        ->call('savePatient')
+        ->assertHasNoErrors();
+
+    $patient = Patient::query()
+        ->where('first_name', 'Jamie')
+        ->where('middle_name', 'Marie')
+        ->where('last_name', 'Rivera')
+        ->firstOrFail();
+    expect($checkIn->fresh()->possible_match_patient_id)->toBe($patient->id);
+
+    Livewire::actingAs($staff)->test(CheckInsWorkspace::class)
+        ->assertSee('Possible existing patient')
+        ->assertSee($patient->patient_number);
 });
 
 it('records a vaccination and a consent decision against the selected patient', function () {

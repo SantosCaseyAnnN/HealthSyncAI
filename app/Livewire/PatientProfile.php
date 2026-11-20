@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\AuthorizesClinicStaff;
 use App\Models\Patient;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
@@ -9,6 +10,8 @@ use Livewire\Component;
 
 class PatientProfile extends Component
 {
+    use AuthorizesClinicStaff;
+
     public Patient $patient;
 
     public string $vaccineName = '';
@@ -97,7 +100,7 @@ class PatientProfile extends Component
                 'consents' => fn ($query) => $query->orderByDesc('recorded_at')->orderByDesc('id'),
                 'consents.recordedBy',
             ])
-            ->withCount(['appointments', 'medicalRecords', 'labOrders'])
+            ->withCount(['appointments', 'medicalRecords'])
             ->findOrFail($this->patient->getKey());
 
         return view('livewire.patient-profile', [

@@ -41,7 +41,10 @@ class FortifyServiceProvider extends ServiceProvider
         {
             public function toResponse($request)
             {
-                return redirect()->route('login')->with('status', 'Sign up complete!');
+                return redirect()->route('dashboard')->with(
+                    'status',
+                    'Your application has been submitted. An administrator must approve your account before workspace access is available.',
+                );
             }
         });
 

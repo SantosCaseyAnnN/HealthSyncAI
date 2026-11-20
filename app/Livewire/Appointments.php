@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\AuthorizesClinicStaff;
 use App\Models\Appointment;
 use App\Models\Patient;
 use Carbon\Carbon;
@@ -14,6 +15,7 @@ use Livewire\WithPagination;
 
 class Appointments extends Component
 {
+    use AuthorizesClinicStaff;
     use WithPagination;
 
     public string $viewMode = 'list';
@@ -163,7 +165,7 @@ class Appointments extends Component
     public function render(): View
     {
         $appointmentsQuery = Appointment::query()
-            ->withCount(['medicalRecords', 'labOrders'])
+            ->withCount('medicalRecords')
             ->whereDate('scheduled_at', $this->selectedDate)
             ->when($this->patientFilter, fn ($query) => $query->where('patient_id', $this->patientFilter));
 
@@ -175,7 +177,7 @@ class Appointments extends Component
 
         return view('livewire.appointments', [
             'appointments' => (clone $appointmentsQuery)
-                ->with('patient:id,patient_number,first_name,last_name')
+                ->with('patient:id,patient_number,first_name,middle_name,last_name')
                 ->orderBy('scheduled_at')
                 ->paginate(15),
             'patients' => Patient::query()->orderBy('last_name')->orderBy('first_name')->get(),
