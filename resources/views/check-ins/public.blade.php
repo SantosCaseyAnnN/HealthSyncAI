@@ -1,16 +1,16 @@
 <x-guest-layout>
     <main class="min-h-screen bg-slate-50">
         <header class="border-b border-slate-200 bg-white">
-            <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-                <a href="{{ route('login') }}" class="font-semibold tracking-tight text-slate-900">HealthSyncAI <span class="ml-2 text-[10px] font-medium uppercase tracking-wide text-slate-500">Clinic portal</span></a>
+            <div class="mx-auto flex max-w-6xl flex-col items-start gap-2 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
+                <a href="{{ route('login') }}" class="min-w-0 font-semibold tracking-tight text-slate-900">HealthSyncAI <span class="ml-2 text-[10px] font-medium uppercase tracking-wide text-slate-500">Clinic portal</span></a>
                 <span class="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Public check-in · No account required</span>
             </div>
         </header>
 
         <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,.65fr)] lg:py-12">
-        <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-8">
             <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Patient check-in</p>
-            <h1 class="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Submit your information</h1>
+            <h1 class="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">Submit your information</h1>
             <p class="mt-3 text-sm leading-6 text-slate-600">New and returning patients can use this form. Clinic staff will review your details before adding you to the queue. Submitting this form does not register you in the queue.</p>
 
             @if (session('status'))

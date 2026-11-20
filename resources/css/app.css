@@ -3254,3 +3254,197 @@ textarea {
         min-height: 48px;
     }
 }
+
+@media (max-width: 760px) {
+    .healthsync-dashboard .main-content {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .healthsync-dashboard .sidebar-user {
+        display: flex;
+        gap: 10px;
+        padding: 10px 18px;
+    }
+
+    .healthsync-dashboard .sidebar-user strong {
+        font-size: 12px;
+    }
+
+    .healthsync-dashboard .sidebar-user small {
+        font-size: 11px;
+    }
+
+    .healthsync-dashboard .sidebar-user > div:nth-child(2) {
+        min-width: 0;
+    }
+
+    .healthsync-dashboard .sidebar-user strong {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .healthsync-dashboard .sidebar-user form button {
+        min-width: 44px;
+        min-height: 44px;
+        font-size: 18px;
+    }
+
+    .healthsync-dashboard .workspace-topbar {
+        flex-wrap: wrap;
+    }
+
+    .healthsync-dashboard .table-scroll,
+    .healthsync-dashboard .table-wrapper {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .healthsync-dashboard .page-heading,
+    .healthsync-dashboard .dashboard-header,
+    .healthsync-dashboard .medical-header {
+        flex-wrap: wrap;
+    }
+
+    .healthsync-dashboard .appointment-heading .heading-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 520px) {
+    .healthsync-dashboard .main-content {
+        padding-bottom: 104px;
+    }
+
+    .healthsync-dashboard .date-navigation {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .healthsync-dashboard .date-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .healthsync-dashboard .date-buttons button {
+        min-height: 44px;
+        font-size: 13px;
+    }
+
+    .healthsync-dashboard .appointment-heading .heading-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .healthsync-dashboard .appointment-heading .view-toggle {
+        display: flex;
+        width: 100%;
+    }
+
+    .healthsync-dashboard .appointment-heading .view-toggle button {
+        flex: 1;
+        min-height: 44px;
+    }
+
+    .healthsync-dashboard .calendar-event {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: start;
+        gap: 10px;
+        padding: 14px 4px;
+        font-size: 13px;
+    }
+
+    .healthsync-dashboard .calendar-event > strong {
+        width: auto;
+    }
+
+    .healthsync-dashboard .calendar-event > div {
+        grid-column: 1;
+    }
+
+    .healthsync-dashboard .calendar-event > .status-pill,
+    .healthsync-dashboard .calendar-event > .small-outline-button {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        justify-self: end;
+        align-self: center;
+    }
+
+    .healthsync-dashboard .calendar-event > .small-outline-button {
+        min-height: 44px;
+    }
+
+    .healthsync-dashboard .filter-bar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .healthsync-dashboard .filter-bar > *,
+    .healthsync-dashboard .filter-bar label,
+    .healthsync-dashboard .filter-bar input,
+    .healthsync-dashboard .filter-bar select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .healthsync-dashboard .table-footer,
+    .healthsync-dashboard .pagination-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .healthsync-dashboard .pagination-wrap nav {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 360px) {
+    .healthsync-dashboard .main-content {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+    .healthsync-dashboard .workspace-topbar {
+        margin-right: -10px;
+        margin-left: -10px;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+    .healthsync-dashboard .workflow-assistant-widget .workflow-assistant {
+        padding: 14px;
+    }
+
+    .healthsync-dashboard .workflow-assistant-form {
+        flex-direction: column;
+    }
+
+    .healthsync-dashboard .workflow-assistant-form button {
+        min-height: 44px;
+    }
+
+    .healthsync-dashboard .workflow-assistant-suggestions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .healthsync-dashboard input,
+    .healthsync-dashboard select,
+    .healthsync-dashboard textarea,
+    .min-h-screen input,
+    .min-h-screen select,
+    .min-h-screen textarea {
+        font-size: 16px;
+    }
+}
