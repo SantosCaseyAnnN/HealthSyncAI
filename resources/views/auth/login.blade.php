@@ -12,7 +12,7 @@
             <div class="relative max-w-xl">
                 <p class="mb-4 text-sm font-semibold uppercase tracking-[.22em] text-cyan-200">A calmer way to care</p>
                 <h1 class="text-5xl font-semibold leading-tight tracking-tight">Your care team, connected.</h1>
-                <p class="mt-5 max-w-lg text-lg leading-8 text-blue-100">Secure tools for clinic staff, students in simulation, and administrators.</p>
+                <p class="mt-5 max-w-lg text-lg leading-8 text-blue-100">Secure tools for clinic staff and administrators.</p>
             </div>
             <p class="relative text-sm text-blue-200">Secure access for approved HealthSyncAI accounts</p>
         </section>

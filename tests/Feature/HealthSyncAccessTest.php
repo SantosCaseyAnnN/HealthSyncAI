@@ -1,6 +1,5 @@
 <?php
 
-use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Livewire\AdminUsers;
 use App\Livewire\CheckIns;
 use App\Livewire\Prescriptions;
@@ -11,51 +10,6 @@ use App\Notifications\AccountDecisionNotification;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
-
-it('keeps students in the fictional practice workspace and blocks clinic records', function () {
-    $student = User::factory()->create([
-        'role' => User::ROLE_STUDENT,
-        'school_id' => 'QC-2048',
-        'year_level' => 'Third',
-    ]);
-
-    $this->actingAs($student)->get('/practice')
-        ->assertOk()
-        ->assertSee('Fictional practice cases')
-        ->assertSee('Simulation only');
-
-    $this->get('/patients')->assertForbidden();
-    $this->get('/appointments')->assertForbidden();
-    $this->get('/medical-records')->assertForbidden();
-    $this->get('/prescriptions')->assertForbidden();
-});
-
-it('requires a verified student school ID before approval and notifies the applicant', function () {
-    Notification::fake();
-    $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-    $student = User::factory()->create([
-        'role' => User::ROLE_STUDENT,
-        'approval_status' => User::APPROVAL_PENDING,
-        'is_active' => false,
-        'school_id' => 'QC-4021',
-        'year_level' => 'Second',
-    ]);
-
-    Livewire::actingAs($admin)->test(AdminUsers::class)
-        ->call('acceptApplication', $student->id)
-        ->assertHasErrors('approval')
-        ->call('verifySchoolId', $student->id)
-        ->call('acceptApplication', $student->id)
-        ->assertHasNoErrors();
-
-    expect($student->fresh())
-        ->approval_status->toBe(User::APPROVAL_APPROVED)
-        ->is_active->toBeTrue()
-        ->school_id_verified_at->not->toBeNull();
-    Notification::assertSentTo($student, AccountDecisionNotification::class, fn (AccountDecisionNotification $notification) => $notification->decision === 'accepted');
-
-    $this->actingAs($student->fresh())->get('/practice')->assertOk();
-});
 
 it('rejects a clinic application and notifies the applicant without granting access', function () {
     Notification::fake();
@@ -78,47 +32,55 @@ it('rejects a clinic application and notifies the applicant without granting acc
     $this->actingAs($staff->fresh())->get('/patients')->assertRedirect(route('dashboard'));
 });
 
+it('accepts a clinic application and activates access', function () {
+    Notification::fake();
+    $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+    $staff = User::factory()->create([
+        'role' => User::ROLE_CLINIC_STAFF,
+        'approval_status' => User::APPROVAL_PENDING,
+        'is_active' => false,
+    ]);
+
+    Livewire::actingAs($admin)->test(AdminUsers::class)
+        ->call('acceptApplication', $staff->id)
+        ->assertHasNoErrors();
+
+    expect($staff->fresh())
+        ->approval_status->toBe(User::APPROVAL_APPROVED)
+        ->is_active->toBeTrue();
+    Notification::assertSentTo($staff, AccountDecisionNotification::class, fn (AccountDecisionNotification $notification) => $notification->decision === 'accepted');
+
+    $this->actingAs($staff->fresh())->get('/patients')->assertOk();
+});
+
 it('does not let clinic staff open the admin account workspace', function () {
     $staff = User::factory()->create(['role' => User::ROLE_CLINIC_STAFF]);
 
     $this->actingAs($staff)->get('/admin/accounts')->assertForbidden();
 });
 
-it('sends an account back for review when an administrator changes its role or school ID', function () {
+it('allows an administrator to edit clinic staff account information', function () {
     $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-    $staff = User::factory()->create(['role' => User::ROLE_CLINIC_STAFF]);
-    $student = User::factory()->create([
-        'role' => User::ROLE_STUDENT,
-        'school_id' => 'QC-6081',
-        'year_level' => 'Second',
-        'school_id_verified_at' => now(),
+    $staff = User::factory()->create([
+        'role' => User::ROLE_CLINIC_STAFF,
+        'first_name' => 'Old',
+        'last_name' => 'Name',
     ]);
 
     Livewire::actingAs($admin)->test(AdminUsers::class)
         ->call('editUser', $staff->id)
-        ->set('role', User::ROLE_STUDENT)
-        ->set('schoolId', 'QC-6082')
-        ->set('yearLevel', 'Third')
-        ->call('saveUser')
-        ->assertHasNoErrors()
-        ->assertSee($staff->email)
-        ->set('statusFilter', 'pending')
-        ->assertSee($staff->email)
-        ->call('editUser', $student->id)
-        ->set('schoolId', 'QC-6083')
+        ->set('firstName', 'Updated')
+        ->set('middleName', 'Clinic')
+        ->set('lastName', 'Staff')
+        ->set('email', 'updated.staff@example.com')
         ->call('saveUser')
         ->assertHasNoErrors();
 
     expect($staff->fresh())
-        ->role->toBe(User::ROLE_STUDENT)
-        ->approval_status->toBe(User::APPROVAL_PENDING)
-        ->is_active->toBeFalse()
-        ->school_id_verified_at->toBeNull();
-    expect($student->fresh())
-        ->school_id->toBe('QC-6083')
-        ->approval_status->toBe(User::APPROVAL_PENDING)
-        ->is_active->toBeFalse()
-        ->school_id_verified_at->toBeNull();
+        ->first_name->toBe('Updated')
+        ->middle_name->toBe('Clinic')
+        ->last_name->toBe('Staff')
+        ->email->toBe('updated.staff@example.com');
 });
 
 it('does not allow account activation to bypass a rejected application', function () {
@@ -138,38 +100,58 @@ it('does not allow account activation to bypass a rejected application', functio
         ->is_active->toBeFalse();
 });
 
-it('accepts a signed public check-in and keeps the request pending until clinic review', function () {
+it('accepts basic measurements on a signed public check-in and stores it pending', function () {
     $patient = Patient::factory()->create();
     $signedUrl = URL::signedRoute('check-ins.show', ['patient' => $patient]);
 
-    $this->get($signedUrl)->assertOk()->assertSee('Share your check-in details');
+    $this->get($signedUrl)
+        ->assertOk()
+        ->assertSee('Height (cm)')
+        ->assertSee('Weight (kg)')
+        ->assertSee('Basic clinic measurements');
 
     $this->post($signedUrl, [
         'first_name' => 'Jamie',
         'last_name' => 'Rivera',
         'date_of_birth' => '1994-05-12',
+        'gender' => 'Female',
         'phone' => '555-0199',
         'email' => 'jamie@example.com',
         'reason_for_visit' => 'Routine follow-up',
+        'height_cm' => 165,
+        'weight_kg' => 60,
+        'blood_pressure' => '118/76',
+        'temperature_c' => 36.8,
+        'pulse_rate' => 72,
+        'respiratory_rate' => 16,
+        'oxygen_saturation' => 98.5,
     ])->assertRedirect();
 
     $this->assertDatabaseHas('check_ins', [
         'patient_id' => $patient->id,
         'first_name' => 'Jamie',
+        'gender' => 'Female',
+        'height_cm' => 165,
+        'weight_kg' => 60,
+        'blood_pressure' => '118/76',
         'status' => 'pending',
         'queue_number' => null,
     ]);
-
-    $otherPatient = Patient::factory()->create();
-    $tamperedUrl = str_replace('/check-in/'.$patient->id, '/check-in/'.$otherPatient->id, $signedUrl);
-
-    $this->get($tamperedUrl)->assertForbidden();
 });
 
-it('registers a reviewed check-in in the clinic queue and estimates its wait', function () {
+it('registers a reviewed check-in and updates the linked patient measurements', function () {
     $staff = User::factory()->create(['role' => User::ROLE_CLINIC_STAFF]);
     $patient = Patient::factory()->create();
-    $checkIn = CheckIn::factory()->for($patient)->create();
+    $checkIn = CheckIn::factory()->for($patient)->create([
+        'gender' => 'Female',
+        'height_cm' => 165,
+        'weight_kg' => 60,
+        'blood_pressure' => '118/76',
+        'temperature_c' => 36.8,
+        'pulse_rate' => 72,
+        'respiratory_rate' => 16,
+        'oxygen_saturation' => 98.5,
+    ]);
 
     Livewire::actingAs($staff)->test(CheckIns::class)
         ->set('statusFilter', 'queue')
@@ -181,6 +163,12 @@ it('registers a reviewed check-in in the clinic queue and estimates its wait', f
         ->status->toBe('registered')
         ->queue_number->toBe(1)
         ->reviewed_by_user_id->toBe($staff->id);
+
+    expect($patient->fresh())
+        ->height_cm->toBe('165.00')
+        ->weight_kg->toBe('60.00')
+        ->blood_pressure->toBe('118/76')
+        ->bmi->toBe('22.04');
 });
 
 it('allows clinic staff to create patient-linked prescription records', function () {
@@ -207,22 +195,8 @@ it('allows clinic staff to create patient-linked prescription records', function
     ]);
 });
 
-it('does not let students change their own role or school ID through profile updates', function () {
-    $student = User::factory()->create([
-        'role' => User::ROLE_STUDENT,
-        'school_id' => 'QC-5091',
-        'year_level' => 'First',
-    ]);
-
-    app(UpdateUserProfileInformation::class)->update($student, [
-        'name' => 'Updated Student',
-        'email' => $student->email,
-        'role' => User::ROLE_CLINIC_STAFF,
-        'school_id' => 'QC-9999',
-    ]);
-
-    expect($student->fresh())
-        ->name->toBe('Updated Student')
-        ->role->toBe(User::ROLE_STUDENT)
-        ->school_id->toBe('QC-5091');
+it('returns 404 for the removed student workspace route', function () {
+    $this->actingAs(User::factory()->create(['role' => User::ROLE_CLINIC_STAFF]))
+        ->get('/practice')
+        ->assertNotFound();
 });

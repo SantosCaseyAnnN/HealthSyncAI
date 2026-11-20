@@ -59,20 +59,13 @@
                         <a href="{{ route('prescriptions') }}" class="rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:bg-blue-50">Prescription records</a>
                     </div>
                 </section>
-            @elseif (auth()->user()->isStudent())
-                <section class="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-8">
-                    <p class="text-sm font-semibold text-blue-700">ALLIED-HEALTH PRACTICE</p>
-                    <h2 class="mt-2 text-2xl font-semibold text-slate-900">A safe place to practice</h2>
-                    <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Practice with fictional cases only. Student accounts cannot access clinic patient records, appointments, prescriptions, or real queues.</p>
-                    <a href="{{ route('student.practice') }}" class="mt-6 inline-flex rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800">Open simulation workspace</a>
-                </section>
             @elseif (auth()->user()->isAdmin())
                 <section class="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-8">
                     <div class="flex flex-wrap items-start justify-between gap-4">
                         <div>
                             <p class="text-sm font-semibold text-blue-700">ADMINISTRATION</p>
                             <h2 class="mt-2 text-2xl font-semibold text-slate-900">Manage workspace access</h2>
-                            <p class="mt-2 text-sm text-slate-500">Review applications, verify student IDs, and maintain accounts.</p>
+                            <p class="mt-2 text-sm text-slate-500">Review applications and maintain clinic staff and administrator accounts.</p>
                         </div>
                         <a href="{{ route('admin.accounts') }}" class="rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800">Manage accounts</a>
                     </div>

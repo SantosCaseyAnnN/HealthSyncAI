@@ -55,6 +55,22 @@ class Patients extends Component
 
     public string $emergencyContactPhone = '';
 
+    public string $heightCm = '';
+
+    public string $weightKg = '';
+
+    public string $bmi = '';
+
+    public string $bloodPressure = '';
+
+    public string $temperatureC = '';
+
+    public string $pulseRate = '';
+
+    public string $respiratoryRate = '';
+
+    public string $oxygenSaturation = '';
+
     public function updatedSearch(): void
     {
         $this->resetPage();
@@ -96,6 +112,14 @@ class Patients extends Component
         $this->emergencyContactName = $patient->emergency_contact_name ?? '';
         $this->emergencyContactRelationship = $patient->emergency_contact_relationship ?? '';
         $this->emergencyContactPhone = $patient->emergency_contact_phone ?? '';
+        $this->heightCm = $patient->height_cm !== null ? (string) $patient->height_cm : '';
+        $this->weightKg = $patient->weight_kg !== null ? (string) $patient->weight_kg : '';
+        $this->bmi = $patient->bmi !== null ? (string) $patient->bmi : '';
+        $this->bloodPressure = $patient->blood_pressure ?? '';
+        $this->temperatureC = $patient->temperature_c !== null ? (string) $patient->temperature_c : '';
+        $this->pulseRate = $patient->pulse_rate !== null ? (string) $patient->pulse_rate : '';
+        $this->respiratoryRate = $patient->respiratory_rate !== null ? (string) $patient->respiratory_rate : '';
+        $this->oxygenSaturation = $patient->oxygen_saturation !== null ? (string) $patient->oxygen_saturation : '';
         $this->showForm = true;
     }
 
@@ -122,6 +146,14 @@ class Patients extends Component
             'emergencyContactName' => ['nullable', 'string', 'max:150'],
             'emergencyContactRelationship' => ['nullable', 'string', 'max:100'],
             'emergencyContactPhone' => ['nullable', 'string', 'max:30'],
+            'heightCm' => ['nullable', 'numeric', 'min:30', 'max:250'],
+            'weightKg' => ['nullable', 'numeric', 'min:1', 'max:500'],
+            'bmi' => ['nullable', 'numeric', 'min:5', 'max:100'],
+            'bloodPressure' => ['nullable', 'string', 'max:20'],
+            'temperatureC' => ['nullable', 'numeric', 'min:25', 'max:45'],
+            'pulseRate' => ['nullable', 'integer', 'min:20', 'max:300'],
+            'respiratoryRate' => ['nullable', 'integer', 'min:4', 'max:80'],
+            'oxygenSaturation' => ['nullable', 'numeric', 'min:50', 'max:100'],
         ]);
 
         $attributes = [
@@ -140,6 +172,14 @@ class Patients extends Component
             'emergency_contact_name' => $validated['emergencyContactName'] ?: null,
             'emergency_contact_relationship' => $validated['emergencyContactRelationship'] ?: null,
             'emergency_contact_phone' => $validated['emergencyContactPhone'] ?: null,
+            'height_cm' => $validated['heightCm'] !== null && $validated['heightCm'] !== '' ? $validated['heightCm'] : null,
+            'weight_kg' => $validated['weightKg'] !== null && $validated['weightKg'] !== '' ? $validated['weightKg'] : null,
+            'bmi' => $validated['bmi'] !== null && $validated['bmi'] !== '' ? $validated['bmi'] : null,
+            'blood_pressure' => $validated['bloodPressure'] ?: null,
+            'temperature_c' => $validated['temperatureC'] !== null && $validated['temperatureC'] !== '' ? $validated['temperatureC'] : null,
+            'pulse_rate' => $validated['pulseRate'] !== null && $validated['pulseRate'] !== '' ? $validated['pulseRate'] : null,
+            'respiratory_rate' => $validated['respiratoryRate'] !== null && $validated['respiratoryRate'] !== '' ? $validated['respiratoryRate'] : null,
+            'oxygen_saturation' => $validated['oxygenSaturation'] !== null && $validated['oxygenSaturation'] !== '' ? $validated['oxygenSaturation'] : null,
         ];
 
         if ($this->editingPatientId === null) {
@@ -207,6 +247,14 @@ class Patients extends Component
             'emergencyContactName',
             'emergencyContactRelationship',
             'emergencyContactPhone',
+            'heightCm',
+            'weightKg',
+            'bmi',
+            'bloodPressure',
+            'temperatureC',
+            'pulseRate',
+            'respiratoryRate',
+            'oxygenSaturation',
         );
         $this->patientStatus = 'active';
         $this->showForm = false;

@@ -79,6 +79,14 @@ it('creates and updates a patient record', function () {
         ->set('genderInput', 'Other')
         ->set('phone', '555-0101')
         ->set('provider', 'Dr. Morgan Lee')
+        ->set('heightCm', '170')
+        ->set('weightKg', '68')
+        ->set('bmi', '23.53')
+        ->set('bloodPressure', '120/80')
+        ->set('temperatureC', '36.7')
+        ->set('pulseRate', '74')
+        ->set('respiratoryRate', '16')
+        ->set('oxygenSaturation', '98')
         ->call('savePatient')
         ->assertHasNoErrors();
 
@@ -89,6 +97,14 @@ it('creates and updates a patient record', function () {
         'patient_number' => $patient->patient_number,
         'last_name' => 'Rivera',
         'gender' => 'Other',
+        'height_cm' => 170,
+        'weight_kg' => 68,
+        'bmi' => 23.53,
+        'blood_pressure' => '120/80',
+        'temperature_c' => 36.7,
+        'pulse_rate' => 74,
+        'respiratory_rate' => 16,
+        'oxygen_saturation' => 98,
     ]);
 
     Livewire::test(Patients::class)

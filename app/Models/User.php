@@ -14,8 +14,6 @@ class User extends Authenticatable
 {
     public const ROLE_CLINIC_STAFF = 'clinic_staff';
 
-    public const ROLE_STUDENT = 'student';
-
     public const ROLE_ADMIN = 'admin';
 
     public const APPROVAL_PENDING = 'pending';
@@ -48,9 +46,6 @@ class User extends Authenticatable
         'role',
         'approval_status',
         'is_active',
-        'school_id',
-        'year_level',
-        'school_id_verified_at',
     ];
 
     /**
@@ -85,18 +80,12 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
-            'school_id_verified_at' => 'datetime',
         ];
     }
 
     public function isClinicStaff(): bool
     {
         return $this->role === self::ROLE_CLINIC_STAFF;
-    }
-
-    public function isStudent(): bool
-    {
-        return $this->role === self::ROLE_STUDENT;
     }
 
     public function isAdmin(): bool
@@ -113,7 +102,6 @@ class User extends Authenticatable
     {
         return match ($this->role) {
             self::ROLE_CLINIC_STAFF => 'Clinic Staff',
-            self::ROLE_STUDENT => 'Student',
             self::ROLE_ADMIN => 'Admin',
             default => 'Unassigned',
         };

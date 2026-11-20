@@ -26,7 +26,23 @@
                                 <td>{{ $checkIn->created_at->format('M d, h:i A') }}</td>
                                 <td><strong>{{ $checkIn->first_name }} {{ $checkIn->last_name }}</strong><small class="block">{{ $checkIn->date_of_birth?->format('M d, Y') ?: 'Birth date not provided' }}</small><small class="block">Linked: {{ $checkIn->patient->patient_number }} — {{ $checkIn->patient->first_name }} {{ $checkIn->patient->last_name }}</small></td>
                                 <td>{{ $checkIn->phone ?: '—' }}<small class="block">{{ $checkIn->email ?: '' }}</small></td>
-                                <td>{{ $checkIn->reason_for_visit ?: 'Not provided' }}</td>
+                                <td>
+                                    {{ $checkIn->reason_for_visit ?: 'Not provided' }}
+                                    @if ($checkIn->gender || $checkIn->height_cm || $checkIn->weight_kg || $checkIn->blood_pressure)
+                                        <small class="block">
+                                            {{ $checkIn->gender ? 'Gender: '.$checkIn->gender : '' }}
+                                            {{ $checkIn->height_cm ? ' · '.$checkIn->height_cm.' cm' : '' }}
+                                            {{ $checkIn->weight_kg ? ' · '.$checkIn->weight_kg.' kg' : '' }}
+                                        </small>
+                                        <small class="block">
+                                            {{ $checkIn->blood_pressure ? 'BP '.$checkIn->blood_pressure : '' }}
+                                            {{ $checkIn->temperature_c ? ' · '.$checkIn->temperature_c.' C' : '' }}
+                                            {{ $checkIn->pulse_rate ? ' · '.$checkIn->pulse_rate.' bpm' : '' }}
+                                            {{ $checkIn->respiratory_rate ? ' · '.$checkIn->respiratory_rate.'/min' : '' }}
+                                            {{ $checkIn->oxygen_saturation ? ' · '.$checkIn->oxygen_saturation.'% O2' : '' }}
+                                        </small>
+                                    @endif
+                                </td>
                                 <td>{{ str($checkIn->status)->title() }} @if ($checkIn->queue_number)<small class="block">#{{ $checkIn->queue_number }}</small>@endif</td>
                                 <td>@if ($checkIn->status === 'registered') ~{{ max(0, $checkIn->queue_number - 1) * 15 }} min<small class="block">Workflow estimate only</small>@else — @endif</td>
                                 <td>

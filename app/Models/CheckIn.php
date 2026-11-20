@@ -20,6 +20,14 @@ class CheckIn extends Model
         'phone',
         'email',
         'reason_for_visit',
+        'gender',
+        'height_cm',
+        'weight_kg',
+        'blood_pressure',
+        'temperature_c',
+        'pulse_rate',
+        'respiratory_rate',
+        'oxygen_saturation',
         'status',
         'check_in_date',
         'queue_number',
@@ -33,6 +41,10 @@ class CheckIn extends Model
             'date_of_birth' => 'date',
             'check_in_date' => 'date',
             'reviewed_at' => 'datetime',
+            'height_cm' => 'decimal:2',
+            'weight_kg' => 'decimal:2',
+            'temperature_c' => 'decimal:1',
+            'oxygen_saturation' => 'decimal:2',
         ];
     }
 

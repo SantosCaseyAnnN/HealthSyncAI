@@ -29,12 +29,25 @@ class Patient extends Model
         'emergency_contact_name',
         'emergency_contact_relationship',
         'emergency_contact_phone',
+        'height_cm',
+        'weight_kg',
+        'bmi',
+        'blood_pressure',
+        'temperature_c',
+        'pulse_rate',
+        'respiratory_rate',
+        'oxygen_saturation',
     ];
 
     protected function casts(): array
     {
         return [
             'date_of_birth' => 'date',
+            'height_cm' => 'decimal:2',
+            'weight_kg' => 'decimal:2',
+            'bmi' => 'decimal:2',
+            'temperature_c' => 'decimal:1',
+            'oxygen_saturation' => 'decimal:2',
         ];
     }
 

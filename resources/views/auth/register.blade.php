@@ -16,25 +16,17 @@
             </section>
 
             <section class="flex items-center justify-center px-5 py-8 sm:px-10 lg:px-14">
-                <div class="w-full max-w-xl" x-data="{ role: '{{ old('role', 'clinic_staff') }}' }">
+                <div class="w-full max-w-xl">
                     <div class="mb-7">
                         <p class="text-sm font-semibold text-blue-700">ACCOUNT APPLICATION</p>
                         <h2 class="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Create your account</h2>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">Clinic staff and student accounts need administrator approval before workspace access.</p>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">Clinic staff accounts need administrator approval before workspace access.</p>
                     </div>
                     <x-validation-errors class="mb-5 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700" />
 
                     <form method="POST" action="{{ route('register') }}" class="space-y-4">
                         @csrf
-                        <div>
-                            <label for="role" class="mb-2 block text-sm font-medium text-slate-700">I am registering as</label>
-                            <select id="role" name="role" x-model="role" required class="block w-full rounded-xl border-slate-300 px-4 py-3 text-sm shadow-sm focus:border-blue-600 focus:ring-blue-600">
-                                <option value="clinic_staff">Clinic Staff</option>
-                                <option value="student">Student</option>
-                                <option value="admin">Admin</option>
-                            </select>
-                            @error('role') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
-                        </div>
+                        <input type="hidden" name="role" value="clinic_staff">
 
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                             <div>
@@ -55,31 +47,9 @@
                         </div>
 
                         <div>
-                            <label for="email" class="mb-2 block text-sm font-medium text-slate-700">
-                                <span x-show="role === 'clinic_staff'">Clinic email</span>
-                                <span x-show="role === 'student'">Account email</span>
-                                <span x-show="role === 'admin'">Admin email</span>
-                            </label>
+                            <label for="email" class="mb-2 block text-sm font-medium text-slate-700">Clinic email</label>
                             <input id="email" name="email" type="email" value="{{ old('email') }}" required autocomplete="email" class="block w-full rounded-xl border-slate-300 px-4 py-3 text-sm shadow-sm focus:border-blue-600 focus:ring-blue-600" placeholder="you@example.com">
                             @error('email') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
-                        </div>
-
-                        <div x-cloak x-show="role === 'student'" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div>
-                                <label for="school_id" class="mb-2 block text-sm font-medium text-slate-700">Quezon City school ID</label>
-                                <input id="school_id" name="school_id" value="{{ old('school_id') }}" x-bind:required="role === 'student'" x-bind:disabled="role !== 'student'" class="block w-full rounded-xl border-slate-300 px-4 py-3 text-sm shadow-sm focus:border-blue-600 focus:ring-blue-600" placeholder="School ID number">
-                                @error('school_id') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
-                            </div>
-                            <div>
-                                <label for="year_level" class="mb-2 block text-sm font-medium text-slate-700">Current year level</label>
-                                <select id="year_level" name="year_level" x-bind:required="role === 'student'" x-bind:disabled="role !== 'student'" class="block w-full rounded-xl border-slate-300 px-4 py-3 text-sm shadow-sm focus:border-blue-600 focus:ring-blue-600">
-                                    <option value="">Select year level</option>
-                                    @foreach (['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Higher', 'Graduate/Postgrad'] as $yearLevel)
-                                        <option value="{{ $yearLevel }}" @selected(old('year_level') === $yearLevel)>{{ $yearLevel }}</option>
-                                    @endforeach
-                                </select>
-                                @error('year_level') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
-                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -102,7 +72,7 @@
                         @endif
 
                         <div class="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm leading-5 text-blue-900">
-                            Applications are reviewed by an administrator. Access is enabled only after approval. Student accounts only receive the simulation workspace.
+                            Applications are reviewed by an administrator. Access is enabled only after approval.
                         </div>
                         <button type="submit" class="w-full rounded-xl bg-blue-700 px-4 py-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800">Submit application</button>
                     </form>

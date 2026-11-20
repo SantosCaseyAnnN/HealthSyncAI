@@ -43,6 +43,14 @@
                     <div><strong>Family history</strong><p>{{ $profilePatient->family_history ?? 'Not recorded' }}</p></div>
                     <div><strong>Emergency contact</strong><p>{{ $profilePatient->emergency_contact_name ?? 'Not recorded' }}{{ $profilePatient->emergency_contact_relationship ? ' · '.$profilePatient->emergency_contact_relationship : '' }}</p></div>
                     <div><strong>Emergency phone</strong><p>{{ $profilePatient->emergency_contact_phone ?? 'Not recorded' }}</p></div>
+                    <div><strong>Height</strong><p>{{ $profilePatient->height_cm !== null ? $profilePatient->height_cm.' cm' : 'Not recorded' }}</p></div>
+                    <div><strong>Weight</strong><p>{{ $profilePatient->weight_kg !== null ? $profilePatient->weight_kg.' kg' : 'Not recorded' }}</p></div>
+                    <div><strong>BMI</strong><p>{{ $profilePatient->bmi ?? 'Not recorded' }}</p></div>
+                    <div><strong>Blood pressure</strong><p>{{ $profilePatient->blood_pressure ?? 'Not recorded' }}</p></div>
+                    <div><strong>Temperature</strong><p>{{ $profilePatient->temperature_c !== null ? $profilePatient->temperature_c.' C' : 'Not recorded' }}</p></div>
+                    <div><strong>Pulse</strong><p>{{ $profilePatient->pulse_rate !== null ? $profilePatient->pulse_rate.' bpm' : 'Not recorded' }}</p></div>
+                    <div><strong>Respiratory rate</strong><p>{{ $profilePatient->respiratory_rate !== null ? $profilePatient->respiratory_rate.' breaths/min' : 'Not recorded' }}</p></div>
+                    <div><strong>Oxygen saturation</strong><p>{{ $profilePatient->oxygen_saturation !== null ? $profilePatient->oxygen_saturation.'%' : 'Not recorded' }}</p></div>
                 </div>
             </div>
         </section>

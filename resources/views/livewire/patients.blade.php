@@ -101,6 +101,38 @@
                             <input type="text" wire:model="emergencyContactPhone" maxlength="30">
                             @error('emergencyContactPhone') <small class="clinical-error">{{ $message }}</small> @enderror
                         </label>
+                        <label>Height (cm)
+                            <input type="number" step="0.1" min="30" max="250" wire:model="heightCm">
+                            @error('heightCm') <small class="clinical-error">{{ $message }}</small> @enderror
+                        </label>
+                        <label>Weight (kg)
+                            <input type="number" step="0.1" min="1" max="500" wire:model="weightKg">
+                            @error('weightKg') <small class="clinical-error">{{ $message }}</small> @enderror
+                        </label>
+                        <label>BMI
+                            <input type="number" step="0.01" min="5" max="100" wire:model="bmi">
+                            @error('bmi') <small class="clinical-error">{{ $message }}</small> @enderror
+                        </label>
+                        <label>Blood pressure
+                            <input type="text" maxlength="20" placeholder="120/80" wire:model="bloodPressure">
+                            @error('bloodPressure') <small class="clinical-error">{{ $message }}</small> @enderror
+                        </label>
+                        <label>Temperature (C)
+                            <input type="number" step="0.1" min="25" max="45" wire:model="temperatureC">
+                            @error('temperatureC') <small class="clinical-error">{{ $message }}</small> @enderror
+                        </label>
+                        <label>Pulse (bpm)
+                            <input type="number" min="20" max="300" wire:model="pulseRate">
+                            @error('pulseRate') <small class="clinical-error">{{ $message }}</small> @enderror
+                        </label>
+                        <label>Respiratory rate
+                            <input type="number" min="4" max="80" wire:model="respiratoryRate">
+                            @error('respiratoryRate') <small class="clinical-error">{{ $message }}</small> @enderror
+                        </label>
+                        <label>Oxygen saturation (%)
+                            <input type="number" step="0.1" min="50" max="100" wire:model="oxygenSaturation">
+                            @error('oxygenSaturation') <small class="clinical-error">{{ $message }}</small> @enderror
+                        </label>
                     </div>
                     <div class="clinical-form-actions">
                         <button class="primary-button" type="submit">Save Patient</button>

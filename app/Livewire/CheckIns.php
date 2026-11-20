@@ -35,6 +35,26 @@ class CheckIns extends Component
                 'reviewed_by_user_id' => auth()->id(),
                 'reviewed_at' => now(),
             ])->save();
+
+            $patientAttributes = array_filter([
+                'gender' => $checkIn->gender,
+                'height_cm' => $checkIn->height_cm,
+                'weight_kg' => $checkIn->weight_kg,
+                'blood_pressure' => $checkIn->blood_pressure,
+                'temperature_c' => $checkIn->temperature_c,
+                'pulse_rate' => $checkIn->pulse_rate,
+                'respiratory_rate' => $checkIn->respiratory_rate,
+                'oxygen_saturation' => $checkIn->oxygen_saturation,
+            ], fn ($value) => $value !== null && $value !== '');
+
+            if ($checkIn->height_cm !== null && $checkIn->weight_kg !== null) {
+                $heightMeters = ((float) $checkIn->height_cm) / 100;
+                $patientAttributes['bmi'] = round(((float) $checkIn->weight_kg) / ($heightMeters * $heightMeters), 2);
+            }
+
+            if ($patientAttributes !== []) {
+                $checkIn->patient->update($patientAttributes);
+            }
         });
 
         session()->flash('status', "Check-in verified and added to queue #{$checkIn->fresh()->queue_number}. Estimated wait times are guidance only.");

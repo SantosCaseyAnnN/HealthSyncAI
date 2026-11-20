@@ -31,10 +31,6 @@ class AdminUsers extends Component
 
     public string $role = User::ROLE_CLINIC_STAFF;
 
-    public string $schoolId = '';
-
-    public string $yearLevel = '';
-
     public function boot(): void
     {
         abort_unless(auth()->user()?->hasWorkspaceAccess() && auth()->user()->isAdmin(), 403);
@@ -64,8 +60,6 @@ class AdminUsers extends Component
         $this->lastName = $user->last_name ?? '';
         $this->email = $user->email;
         $this->role = $user->role;
-        $this->schoolId = $user->school_id ?? '';
-        $this->yearLevel = $user->year_level ?? '';
     }
 
     public function saveUser(): void
@@ -83,30 +77,11 @@ class AdminUsers extends Component
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'role' => ['required', Rule::in([
                 User::ROLE_CLINIC_STAFF,
-                User::ROLE_STUDENT,
                 User::ROLE_ADMIN,
             ])],
-            'schoolId' => [
-                Rule::requiredIf($this->role === User::ROLE_STUDENT),
-                'nullable',
-                'string',
-                'max:100',
-                Rule::unique('users', 'school_id')->ignore($user->id),
-            ],
-            'yearLevel' => [
-                Rule::requiredIf($this->role === User::ROLE_STUDENT),
-                'nullable',
-                Rule::in(['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Higher', 'Graduate/Postgrad']),
-            ],
         ]);
-
-        $schoolId = $this->role === User::ROLE_STUDENT
-            ? $validated['schoolId']
-            : null;
         $roleChanged = $user->role !== $validated['role'];
-        $schoolIdChanged = $user->school_id !== $schoolId;
-        $requiresReview = ($roleChanged && $validated['role'] !== User::ROLE_ADMIN)
-            || ($validated['role'] === User::ROLE_STUDENT && $schoolIdChanged);
+        $requiresReview = $roleChanged && $validated['role'] === User::ROLE_CLINIC_STAFF && $user->role === User::ROLE_ADMIN;
 
         $attributes = [
             'first_name' => $validated['firstName'],
@@ -115,13 +90,7 @@ class AdminUsers extends Component
             'name' => trim($validated['firstName'].' '.($validated['middleName'] ?? '').' '.$validated['lastName']),
             'email' => $validated['email'],
             'role' => $validated['role'],
-            'school_id' => $schoolId,
-            'year_level' => $this->role === User::ROLE_STUDENT ? $validated['yearLevel'] : null,
         ];
-
-        if ($schoolIdChanged) {
-            $attributes['school_id_verified_at'] = null;
-        }
 
         if ($requiresReview) {
             $attributes['approval_status'] = User::APPROVAL_PENDING;
@@ -134,30 +103,14 @@ class AdminUsers extends Component
         $this->cancelEdit();
     }
 
-    public function verifySchoolId(int $userId): void
-    {
-        $user = User::query()->findOrFail($userId);
-        abort_unless($user->isStudent() && $user->school_id !== null, 422);
-
-        $user->forceFill(['school_id_verified_at' => now()])->save();
-        $this->resetErrorBag('approval');
-        session()->flash('status', 'School ID review recorded. This confirms the administrator checked the ID against the school record.');
-    }
-
     public function acceptApplication(int $userId): void
     {
         $user = User::query()->findOrFail($userId);
         abort_unless(
-            in_array($user->role, [User::ROLE_STUDENT, User::ROLE_CLINIC_STAFF], true)
+            $user->role === User::ROLE_CLINIC_STAFF
                 && $user->approval_status === User::APPROVAL_PENDING,
             422,
         );
-
-        if ($user->isStudent() && $user->school_id_verified_at === null) {
-            $this->addError('approval', 'Review and verify the student school ID before approving this application.');
-
-            return;
-        }
 
         $user->forceFill([
             'approval_status' => User::APPROVAL_APPROVED,
@@ -175,7 +128,7 @@ class AdminUsers extends Component
     {
         $user = User::query()->findOrFail($userId);
         abort_unless(
-            in_array($user->role, [User::ROLE_STUDENT, User::ROLE_CLINIC_STAFF], true)
+            $user->role === User::ROLE_CLINIC_STAFF
                 && $user->approval_status === User::APPROVAL_PENDING,
             422,
         );
@@ -210,8 +163,6 @@ class AdminUsers extends Component
             'middleName',
             'lastName',
             'email',
-            'schoolId',
-            'yearLevel',
         );
         $this->role = User::ROLE_CLINIC_STAFF;
         $this->resetValidation();
@@ -233,14 +184,13 @@ class AdminUsers extends Component
                 })
                 ->when($this->search !== '', fn ($query) => $query->where(function ($query) use ($search) {
                     $query->where('name', 'like', $search)
-                        ->orWhere('email', 'like', $search)
-                        ->orWhere('school_id', 'like', $search);
+                        ->orWhere('email', 'like', $search);
                 }))
                 ->orderByRaw("CASE WHEN approval_status = 'pending' THEN 0 ELSE 1 END")
                 ->orderBy('name')
                 ->paginate(15),
             'pendingCount' => User::query()
-                ->whereIn('role', [User::ROLE_STUDENT, User::ROLE_CLINIC_STAFF])
+                ->where('role', User::ROLE_CLINIC_STAFF)
                 ->where('approval_status', User::APPROVAL_PENDING)
                 ->count(),
         ]);

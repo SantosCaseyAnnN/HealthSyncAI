@@ -29,6 +29,15 @@
                         <input name="phone" type="tel" value="{{ old('phone') }}" maxlength="30" autocomplete="tel" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
                         @error('phone') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
                     </label>
+                    <label class="text-sm font-medium text-slate-700">Gender
+                        <select name="gender" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                            <option value="">Not specified</option>
+                            <option value="Female" @selected(old('gender') === 'Female')>Female</option>
+                            <option value="Male" @selected(old('gender') === 'Male')>Male</option>
+                            <option value="Other" @selected(old('gender') === 'Other')>Other</option>
+                        </select>
+                        @error('gender') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
+                    </label>
                 </div>
                 <label class="block text-sm font-medium text-slate-700">Email
                     <input name="email" type="email" value="{{ old('email') }}" maxlength="255" autocomplete="email" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
@@ -38,6 +47,30 @@
                     <textarea name="reason_for_visit" rows="3" maxlength="2000" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">{{ old('reason_for_visit') }}</textarea>
                     @error('reason_for_visit') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
                 </label>
+                <fieldset class="grid grid-cols-1 gap-4 rounded-2xl border border-slate-200 p-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <legend class="px-2 text-sm font-semibold text-slate-700">Basic clinic measurements <span class="font-normal text-slate-400">Optional</span></legend>
+                    <label class="text-sm font-medium text-slate-700">Height (cm)
+                        <input name="height_cm" type="number" step="0.1" min="30" max="250" value="{{ old('height_cm') }}" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                    </label>
+                    <label class="text-sm font-medium text-slate-700">Weight (kg)
+                        <input name="weight_kg" type="number" step="0.1" min="1" max="500" value="{{ old('weight_kg') }}" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                    </label>
+                    <label class="text-sm font-medium text-slate-700">Blood pressure
+                        <input name="blood_pressure" value="{{ old('blood_pressure') }}" maxlength="20" placeholder="120/80" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                    </label>
+                    <label class="text-sm font-medium text-slate-700">Temperature (C)
+                        <input name="temperature_c" type="number" step="0.1" min="25" max="45" value="{{ old('temperature_c') }}" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                    </label>
+                    <label class="text-sm font-medium text-slate-700">Pulse (bpm)
+                        <input name="pulse_rate" type="number" min="20" max="300" value="{{ old('pulse_rate') }}" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                    </label>
+                    <label class="text-sm font-medium text-slate-700">Respiratory rate
+                        <input name="respiratory_rate" type="number" min="4" max="80" value="{{ old('respiratory_rate') }}" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                    </label>
+                    <label class="text-sm font-medium text-slate-700">Oxygen saturation (%)
+                        <input name="oxygen_saturation" type="number" step="0.1" min="50" max="100" value="{{ old('oxygen_saturation') }}" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                    </label>
+                </fieldset>
                 <button type="submit" class="w-full rounded-xl bg-blue-700 px-4 py-3 font-semibold text-white hover:bg-blue-800">Send for clinic review</button>
             </form>
             <p class="mt-5 text-xs leading-5 text-slate-500">Please do not use this form for urgent medical needs. Contact clinic staff directly for urgent assistance.</p>

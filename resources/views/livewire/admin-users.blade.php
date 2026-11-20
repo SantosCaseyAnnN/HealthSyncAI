@@ -21,7 +21,7 @@
                 <div class="flex items-start justify-between gap-4">
                     <div>
                         <h2 class="text-lg font-semibold text-slate-900">Edit account</h2>
-                        <p class="mt-1 text-sm text-slate-500">Personal information and account role. Changing a role or school ID sends the account back for review.</p>
+                        <p class="mt-1 text-sm text-slate-500">Personal information and account role.</p>
                     </div>
                     <button type="button" wire:click="cancelEdit" class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Close</button>
                 </div>
@@ -45,26 +45,10 @@
                     <label class="text-sm font-medium text-slate-700">Role
                         <select wire:model.live="role" class="mt-1 block w-full rounded-xl border-slate-300 text-sm">
                             <option value="clinic_staff">Clinic Staff</option>
-                            <option value="student">Student</option>
                             <option value="admin">Admin</option>
                         </select>
                         @error('role') <small class="text-rose-600">{{ $message }}</small> @enderror
                     </label>
-                    @if ($role === 'student')
-                        <label class="text-sm font-medium text-slate-700">Quezon City school ID
-                            <input wire:model="schoolId" required class="mt-1 block w-full rounded-xl border-slate-300 text-sm">
-                            @error('schoolId') <small class="text-rose-600">{{ $message }}</small> @enderror
-                        </label>
-                        <label class="text-sm font-medium text-slate-700">Current year level
-                            <select wire:model="yearLevel" required class="mt-1 block w-full rounded-xl border-slate-300 text-sm">
-                                <option value="">Select year level</option>
-                                @foreach (['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Higher', 'Graduate/Postgrad'] as $yearLevelOption)
-                                    <option value="{{ $yearLevelOption }}">{{ $yearLevelOption }}</option>
-                                @endforeach
-                            </select>
-                            @error('yearLevel') <small class="text-rose-600">{{ $message }}</small> @enderror
-                        </label>
-                    @endif
                     <div class="flex items-end gap-3">
                         <button type="submit" class="rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800">Save account</button>
                         <button type="button" wire:click="cancelEdit" class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700">Cancel</button>
@@ -75,11 +59,10 @@
 
         <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div class="grid grid-cols-1 gap-3 border-b border-slate-200 p-4 sm:grid-cols-3">
-                <input wire:model.live.debounce.300ms="search" type="search" placeholder="Search name, email, or school ID" class="rounded-xl border-slate-300 text-sm">
+                <input wire:model.live.debounce.300ms="search" type="search" placeholder="Search name or email" class="rounded-xl border-slate-300 text-sm">
                 <select wire:model.live="roleFilter" class="rounded-xl border-slate-300 text-sm">
                     <option value="">All roles</option>
                     <option value="clinic_staff">Clinic Staff</option>
-                    <option value="student">Student</option>
                     <option value="admin">Admin</option>
                 </select>
                 <select wire:model.live="statusFilter" class="rounded-xl border-slate-300 text-sm">
@@ -93,7 +76,7 @@
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
                     <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-                        <tr><th class="px-5 py-3">Account</th><th class="px-5 py-3">Role / school ID</th><th class="px-5 py-3">Access status</th><th class="px-5 py-3">Actions</th></tr>
+                        <tr><th class="px-5 py-3">Account</th><th class="px-5 py-3">Role</th><th class="px-5 py-3">Access status</th><th class="px-5 py-3">Actions</th></tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @forelse ($accounts as $account)
@@ -104,10 +87,6 @@
                                 </td>
                                 <td class="px-5 py-4">
                                     <p class="font-medium text-slate-800">{{ $account->roleLabel() }}</p>
-                                    @if ($account->isStudent())
-                                        <p class="mt-1 text-slate-500">ID: {{ $account->school_id ?: 'Not provided' }} · {{ $account->year_level }}</p>
-                                        <p class="mt-1 text-xs {{ $account->school_id_verified_at ? 'text-emerald-700' : 'text-amber-700' }}">{{ $account->school_id_verified_at ? 'School record checked' : 'ID needs review against school record' }}</p>
-                                    @endif
                                 </td>
                                 <td class="px-5 py-4">
                                     <span @class([
@@ -120,10 +99,7 @@
                                 <td class="min-w-64 px-5 py-4">
                                     <div class="flex flex-wrap gap-2">
                                         <button type="button" wire:click="editUser({{ $account->id }})" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Edit</button>
-                                        @if ($account->isStudent() && ! $account->school_id_verified_at && $account->school_id)
-                                            <button type="button" wire:click="verifySchoolId({{ $account->id }})" class="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800 hover:bg-blue-100">Record ID check</button>
-                                        @endif
-                                        @if ($account->approval_status === 'pending' && in_array($account->role, ['student', 'clinic_staff'], true))
+                                        @if ($account->approval_status === 'pending' && $account->role === 'clinic_staff')
                                             <button type="button" wire:click="acceptApplication({{ $account->id }})" class="rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-800">Accept</button>
                                             <button type="button" wire:click="rejectApplication({{ $account->id }})" class="rounded-lg bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-800">Reject</button>
                                         @elseif ($account->approval_status === 'approved' && ! $account->is(auth()->user()))
@@ -140,6 +116,5 @@
             </div>
             <div class="border-t border-slate-200 px-5 py-4">{{ $accounts->links() }}</div>
         </section>
-        <p class="text-xs leading-5 text-slate-500">Student ID checks are recorded by an administrator. This app is not connected to a school registry; verify IDs against the school record before recording a check.</p>
     </div>
 </div>

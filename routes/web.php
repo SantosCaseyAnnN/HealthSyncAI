@@ -10,7 +10,6 @@ use App\Livewire\MedicalRecords;
 use App\Livewire\PatientProfile;
 use App\Livewire\Patients;
 use App\Livewire\Prescriptions;
-use App\Livewire\StudentWorkspace;
 use App\Models\Appointment;
 use App\Models\CheckIn;
 use App\Models\Patient;
@@ -49,9 +48,9 @@ Route::middleware([
         } elseif ($user->hasWorkspaceAccess() && $user->isAdmin()) {
             $stats = [
                 'Applications to review' => User::query()->where('approval_status', User::APPROVAL_PENDING)
-                    ->whereIn('role', [User::ROLE_STUDENT, User::ROLE_CLINIC_STAFF])->count(),
-                'Student accounts' => User::query()->where('role', User::ROLE_STUDENT)->count(),
+                    ->where('role', User::ROLE_CLINIC_STAFF)->count(),
                 'Clinic staff accounts' => User::query()->where('role', User::ROLE_CLINIC_STAFF)->count(),
+                'Administrator accounts' => User::query()->where('role', User::ROLE_ADMIN)->count(),
             ];
         }
 
@@ -71,10 +70,6 @@ Route::middleware([
         Route::get('/prescriptions', Prescriptions::class)->name('prescriptions');
         Route::get('/check-ins', CheckIns::class)->name('check-ins.index');
     });
-
-    Route::get('/practice', StudentWorkspace::class)
-        ->middleware('role:student')
-        ->name('student.practice');
 
     Route::get('/admin/accounts', AdminUsers::class)
         ->middleware('role:admin')

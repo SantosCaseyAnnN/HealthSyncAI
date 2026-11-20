@@ -42,18 +42,3 @@ test('new users can register', function () {
 })->skip(function () {
     return ! Features::enabled(Features::registration());
 }, 'Registration support is not enabled.');
-
-test('student applications require a school ID and current year level', function () {
-    $this->post('/register', [
-        'first_name' => 'Jamie',
-        'last_name' => 'Rivera',
-        'email' => 'jamie@example.com',
-        'role' => 'student',
-        'password' => 'password',
-        'password_confirmation' => 'password',
-    ])->assertSessionHasErrors(['school_id', 'year_level']);
-
-    $this->assertDatabaseMissing('users', ['email' => 'jamie@example.com']);
-})->skip(function () {
-    return ! Features::enabled(Features::registration());
-}, 'Registration support is not enabled.');
