@@ -130,7 +130,6 @@
                                     <td><span class="status-pill {{ $appointment->status }}-status">{{ str($appointment->status)->replace('_', ' ')->title() }}</span></td>
                                     <td>
                                         <a href="{{ route('medical-records', ['patient' => $appointment->patient_id]) }}">Records ({{ $appointment->medical_records_count }})</a>
-                                        <a href="{{ route('laboratory', ['patient' => $appointment->patient_id]) }}">Labs ({{ $appointment->lab_orders_count }})</a>
                                     </td>
                                     <td>
                                         <button class="small-outline-button" type="button" wire:click="editAppointment({{ $appointment->id }})">Edit</button>

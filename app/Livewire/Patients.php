@@ -17,10 +17,6 @@ class Patients extends Component
 
     public string $search = '';
 
-    public string $status = '';
-
-    public string $gender = '';
-
     public ?int $selectedPatientId = null;
 
     public bool $showForm = false;
@@ -76,16 +72,6 @@ class Patients extends Component
     public string $oxygenSaturation = '';
 
     public function updatedSearch(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatedStatus(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatedGender(): void
     {
         $this->resetPage();
     }
@@ -223,7 +209,12 @@ class Patients extends Component
     public function render(): View
     {
         $patients = Patient::query()
-            ->withCount(['appointments', 'medicalRecords', 'labOrders'])
+            ->with(['latestMedicalRecord' => fn ($query) => $query->select(
+                'medical_records.id',
+                'medical_records.patient_id',
+                'medical_records.title',
+                'medical_records.recorded_at',
+            )])
             ->when($this->search !== '', function ($query) {
                 $search = '%'.$this->search.'%';
 
@@ -234,11 +225,9 @@ class Patients extends Component
                         ->orWhere('phone', 'like', $search);
                 });
             })
-            ->when($this->status !== '', fn ($query) => $query->where('status', $this->status))
-            ->when($this->gender !== '', fn ($query) => $query->where('gender', $this->gender))
             ->orderBy('last_name')
             ->orderBy('first_name')
-            ->paginate(15);
+            ->paginate(6);
         $selectedPatient = $patients->getCollection()->firstWhere('id', $this->selectedPatientId)
             ?? $patients->first();
 

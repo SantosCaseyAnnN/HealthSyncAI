@@ -100,7 +100,7 @@ class PatientProfile extends Component
                 'consents' => fn ($query) => $query->orderByDesc('recorded_at')->orderByDesc('id'),
                 'consents.recordedBy',
             ])
-            ->withCount(['appointments', 'medicalRecords', 'labOrders'])
+            ->withCount(['appointments', 'medicalRecords'])
             ->findOrFail($this->patient->getKey());
 
         return view('livewire.patient-profile', [

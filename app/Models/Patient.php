@@ -6,6 +6,7 @@ use Database\Factories\PatientFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Patient extends Model
 {
@@ -60,6 +61,11 @@ class Patient extends Model
     public function medicalRecords(): HasMany
     {
         return $this->hasMany(MedicalRecord::class);
+    }
+
+    public function latestMedicalRecord(): HasOne
+    {
+        return $this->hasOne(MedicalRecord::class)->latestOfMany('recorded_at');
     }
 
     public function labOrders(): HasMany

@@ -62,11 +62,11 @@
                     <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                         <a href="{{ route('check-ins.index') }}" class="rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:bg-blue-50">Review patient check-ins</a>
                         <a href="{{ route('appointments') }}" class="rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:bg-blue-50">Appointments and queue</a>
-                        <a href="{{ route('medical-records') }}" class="rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:bg-blue-50">Medical records and labs</a>
-                        <a href="{{ route('laboratory') }}" class="rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:bg-blue-50">Laboratory orders</a>
+                        <a href="{{ route('patients') }}" class="rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:bg-blue-50">Patient records</a>
                         <a href="{{ route('prescriptions') }}" class="rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:bg-blue-50">Prescription records</a>
                     </div>
                 </section>
+                <livewire:workflow-assistant />
                 <section class="grid grid-cols-1 gap-6 lg:grid-cols-[1.4fr_.8fr]">
                     <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                         <div class="flex items-center justify-between gap-3">
@@ -137,6 +137,7 @@
                         @endforeach
                     </div>
                 </section>
+                <livewire:workflow-assistant />
             @endif
 
             @if ($notifications->isNotEmpty())

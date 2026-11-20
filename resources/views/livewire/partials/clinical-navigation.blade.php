@@ -31,12 +31,6 @@
             <a href="{{ route('appointments') }}" @class(['nav-item', 'active' => $active === 'appointments'])>
                 <span aria-hidden="true">▣</span> Appointments & queue
             </a>
-            <a href="{{ route('medical-records') }}" @class(['nav-item', 'active' => $active === 'medical-records'])>
-                <span aria-hidden="true">▤</span> Medical Records
-            </a>
-            <a href="{{ route('laboratory') }}" @class(['nav-item', 'active' => $active === 'laboratory'])>
-                <span aria-hidden="true">♧</span> Laboratory
-            </a>
             <a href="{{ route('prescriptions') }}" @class(['nav-item', 'active' => $active === 'prescriptions'])>
                 <span aria-hidden="true">Rx</span> Prescription records
             </a>

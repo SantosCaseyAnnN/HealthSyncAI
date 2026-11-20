@@ -7,7 +7,7 @@
         <div class="page-heading">
             <div>
                 <h2>Patient records</h2>
-                <p>Manage patients and their linked clinical activity.</p>
+                <p>Find, review, and maintain clinic patient information.</p>
             </div>
 
             <button class="primary-button" type="button" wire:click="openForm">
@@ -148,30 +148,18 @@
             </section>
         @endif
 
-        <div class="filter-bar">
+        <div class="patient-search-row">
             <div class="search-box">
                 <span>⌕</span>
-                <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search patients by name, ID, or phone...">
+                <input type="search" wire:model.live.debounce.300ms="search" placeholder="Search patient name or record number">
             </div>
-            <select wire:model.live="status" class="filter-select">
-                <option value="">Status: All</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-            </select>
-            <select wire:model.live="gender" class="filter-select">
-                <option value="">Gender: All</option>
-                <option value="Female">Female</option>
-                <option value="Male">Male</option>
-                <option value="Other">Other</option>
-            </select>
         </div>
 
         <div class="patient-records-grid">
             <section class="directory-panel">
                 <div class="panel-heading">
                     <div>
-                        <strong>Patient Directory</strong>
-                        <small>Search, review, and maintain clinic patient records.</small>
+                        <strong>Patient directory</strong>
                     </div>
                     <span class="record-count">{{ $filteredPatients->total() }} patients</span>
                 </div>
@@ -181,10 +169,9 @@
                         <thead>
                             <tr>
                                 <th>Patient / Record no.</th>
-                                <th>Age / Gender</th>
-                                <th>Last updated</th>
+                                <th>Last visit</th>
                                 <th>Status</th>
-                                <th>Actions</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -196,23 +183,25 @@
                                             <small>{{ $patient->patient_number }}</small>
                                         </button>
                                     </td>
-                                    <td>{{ $patient->date_of_birth?->age ?? '—' }} / {{ $patient->gender ?? '—' }}</td>
-                                    <td>{{ $patient->updated_at->format('d M Y') }}</td>
-                                    <td><span class="status-pill {{ $patient->status }}-status">{{ ucfirst($patient->status) }}</span></td>
                                     <td>
-                                        <a class="small-outline-button" href="{{ route('patients.show', $patient) }}">View</a>
-                                        <button class="small-outline-button" type="button" wire:click="editPatient({{ $patient->id }})">Edit</button>
+                                        @if ($patient->latestMedicalRecord)
+                                            {{ $patient->latestMedicalRecord->recorded_at->format('d M Y') }}
+                                        @else
+                                            <span class="muted-cell">No visit recorded</span>
+                                        @endif
                                     </td>
+                                    <td><span class="status-pill {{ $patient->status }}-status">{{ ucfirst($patient->status) }}</span></td>
+                                    <td><a class="patient-view-link" href="{{ route('patients.show', $patient) }}">View <span aria-hidden="true">→</span></a></td>
                                 </tr>
                             @empty
-                                <tr><td colspan="5" class="empty-state">No patient records found.</td></tr>
+                                <tr><td colspan="4" class="empty-state">No patient records found.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
 
                 <div class="table-footer">
-                    <span>Showing {{ $filteredPatients->count() }} of {{ $filteredPatients->total() }} patients</span>
+                    <span>Showing {{ $filteredPatients->firstItem() ?? 0 }}–{{ $filteredPatients->lastItem() ?? 0 }} of {{ $filteredPatients->total() }} patients</span>
                     {{ $filteredPatients->links() }}
                 </div>
             </section>
@@ -221,35 +210,28 @@
                 @if ($selectedPatient)
                     <div class="patient-summary-header">
                         <p>Patient summary</p>
-                        <span class="status-pill {{ $selectedPatient->status }}-status">{{ ucfirst($selectedPatient->status) }}</span>
                         <h3>{{ $selectedPatient->first_name }} {{ $selectedPatient->last_name }}</h3>
-                        <small>{{ $selectedPatient->patient_number }} · Updated {{ $selectedPatient->updated_at->format('d M Y') }}</small>
+                        <small>{{ $selectedPatient->patient_number }} · Registered {{ $selectedPatient->created_at->format('d M Y') }}</small>
                     </div>
 
                     <dl class="patient-summary-list">
                         <div><dt>Date of birth</dt><dd>{{ $selectedPatient->date_of_birth?->format('d M Y') ?? 'Not recorded' }}{{ $selectedPatient->date_of_birth ? ' · '.$selectedPatient->date_of_birth->age.' years' : '' }}</dd></div>
-                        <div><dt>Gender</dt><dd>{{ $selectedPatient->gender ?? 'Not recorded' }}</dd></div>
                         <div><dt>Contact number</dt><dd>{{ $selectedPatient->phone ?? 'Not recorded' }}</dd></div>
                         <div><dt>Address</dt><dd>{{ $selectedPatient->address ?? 'Not recorded' }}</dd></div>
-                        <div><dt>Blood type</dt><dd>{{ $selectedPatient->blood_type ?? 'Not recorded' }}</dd></div>
                     </dl>
 
-                    <div class="patient-vitals-grid">
-                        <div><small>HEIGHT</small><strong>{{ $selectedPatient->height_cm !== null ? $selectedPatient->height_cm.' cm' : '—' }}</strong></div>
-                        <div><small>WEIGHT</small><strong>{{ $selectedPatient->weight_kg !== null ? $selectedPatient->weight_kg.' kg' : '—' }}</strong></div>
-                        <div><small>BLOOD PRESSURE</small><strong>{{ $selectedPatient->blood_pressure ?? '—' }}</strong></div>
-                        <div><small>TEMPERATURE</small><strong>{{ $selectedPatient->temperature_c !== null ? $selectedPatient->temperature_c.' °C' : '—' }}</strong></div>
+                    <div class="patient-latest-visit">
+                        <small>Latest visit</small>
+                        @if ($selectedPatient->latestMedicalRecord)
+                            <strong>{{ $selectedPatient->latestMedicalRecord->recorded_at->format('d F Y') }} · {{ $selectedPatient->latestMedicalRecord->title }}</strong>
+                        @else
+                            <strong>No visit recorded</strong>
+                        @endif
                     </div>
 
                     <div class="patient-summary-actions">
                         <button class="primary-button" type="button" wire:click="editPatient({{ $selectedPatient->id }})">Edit patient information</button>
-                        <a class="small-outline-button" href="{{ route('patients.show', $selectedPatient) }}">View full profile</a>
-                    </div>
-
-                    <div class="patient-summary-links">
-                        <a href="{{ route('appointments', ['patient' => $selectedPatient->id]) }}">Appointments <span>{{ $selectedPatient->appointments_count }}</span></a>
-                        <a href="{{ route('medical-records', ['patient' => $selectedPatient->id]) }}">Medical records <span>{{ $selectedPatient->medical_records_count }}</span></a>
-                        <a href="{{ route('laboratory', ['patient' => $selectedPatient->id]) }}">Laboratory orders <span>{{ $selectedPatient->lab_orders_count }}</span></a>
+                        <a class="primary-button" href="{{ route('prescriptions', ['patient' => $selectedPatient->id]) }}">View prescriptions <span aria-hidden="true">→</span></a>
                     </div>
 
                     <p class="patient-summary-footnote">Access restricted to authorized clinic personnel.</p>

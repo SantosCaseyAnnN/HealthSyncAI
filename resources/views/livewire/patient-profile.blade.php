@@ -24,7 +24,7 @@
             <div class="panel-heading">
                 <div>
                     <strong>Patient information</strong>
-                    <small>Linked appointments {{ $profilePatient->appointments_count }} · records {{ $profilePatient->medical_records_count }} · labs {{ $profilePatient->lab_orders_count }}</small>
+                    <small>Linked appointments {{ $profilePatient->appointments_count }} · records {{ $profilePatient->medical_records_count }}</small>
                 </div>
                 <a href="{{ route('patients.qr', $profilePatient) }}" target="_blank" rel="noopener">Open patient QR</a>
             </div>

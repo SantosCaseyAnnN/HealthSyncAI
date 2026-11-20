@@ -4,18 +4,22 @@ use App\Livewire\Appointments;
 use App\Livewire\Laboratory;
 use App\Livewire\MedicalRecords;
 use App\Livewire\Patients;
+use App\Livewire\Prescriptions;
 use App\Models\Appointment;
 use App\Models\LabOrder;
 use App\Models\MedicalRecord;
 use App\Models\Patient;
+use App\Models\Prescription;
 use App\Models\User;
 use Database\Seeders\DemoClinicSeeder;
 use Livewire\Livewire;
 
 it('requires a signed-in account for every clinical page', function () {
-    foreach (['/patients', '/appointments', '/medical-records', '/laboratory'] as $path) {
+    foreach (['/patients', '/appointments', '/medical-records'] as $path) {
         $this->get($path)->assertRedirect(route('login'));
     }
+
+    $this->get('/laboratory')->assertNotFound();
 
     $this->actingAs(User::factory()->unverified()->create())
         ->get('/medical-records')
@@ -26,13 +30,13 @@ it('requires a signed-in account for every clinical page', function () {
 it('renders all clinical pages for a signed-in user', function () {
     $this->actingAs(User::factory()->create());
 
-    $this->get('/patients')->assertOk()->assertSee('Patient Directory');
+    $this->get('/patients')->assertOk()->assertSee('Patient directory');
     $this->get('/appointments')->assertOk()->assertSee('Appointments');
     $this->get('/medical-records')->assertOk()->assertSee('Medical Records');
-    $this->get('/laboratory')->assertOk()->assertSee('Laboratory Orders');
+    $this->get('/laboratory')->assertNotFound();
 });
 
-it('filters appointments, medical records, and lab orders by the linked patient', function () {
+it('filters appointments and medical records by the linked patient', function () {
     $this->actingAs(User::factory()->create());
     $patient = Patient::factory()->create();
     $otherPatient = Patient::factory()->create();
@@ -40,9 +44,6 @@ it('filters appointments, medical records, and lab orders by the linked patient'
     $otherAppointment = Appointment::factory()->for($otherPatient)->create(['scheduled_at' => now()]);
     $record = MedicalRecord::factory()->for($patient)->create();
     $otherRecord = MedicalRecord::factory()->for($otherPatient)->create();
-    $labOrder = LabOrder::factory()->for($patient)->create();
-    $otherLabOrder = LabOrder::factory()->for($otherPatient)->create();
-
     $this->get(route('appointments', ['patient' => $patient->id]))
         ->assertOk()
         ->assertSee($appointment->appointment_code)
@@ -53,10 +54,6 @@ it('filters appointments, medical records, and lab orders by the linked patient'
         ->assertSee($record->record_number)
         ->assertDontSee($otherRecord->record_number);
 
-    $this->get(route('laboratory', ['patient' => $patient->id]))
-        ->assertOk()
-        ->assertSee($labOrder->order_number)
-        ->assertDontSee($otherLabOrder->order_number);
 });
 
 it('escapes patient-provided content in the directory', function () {
@@ -73,12 +70,51 @@ it('shows the selected patient summary in the directory', function () {
     $this->actingAs(User::factory()->create());
     $patient = Patient::factory()->create(['address' => 'Quezon City, Metro Manila']);
     $otherPatient = Patient::factory()->create(['address' => 'Makati City']);
+    $latestVisit = MedicalRecord::factory()->for($patient)->create([
+        'title' => 'General consultation',
+        'recorded_at' => '2026-11-17 10:00:00',
+    ]);
+    MedicalRecord::factory()->for($patient)->create([
+        'title' => 'Earlier consultation',
+        'recorded_at' => '2026-10-17 10:00:00',
+    ]);
 
     Livewire::test(Patients::class)
         ->call('selectPatient', $patient->id)
         ->assertSet('selectedPatientId', $patient->id)
         ->assertSee($patient->address)
+        ->assertSee('Registered')
+        ->assertSee('Latest visit')
+        ->assertSee('General consultation')
+        ->assertSee($latestVisit->recorded_at->format('d F Y'))
+        ->assertSee('View prescriptions')
+        ->assertDontSee('Earlier consultation')
+        ->assertDontSee('Laboratory')
         ->assertDontSee($otherPatient->address);
+});
+
+it('shows six patient records per directory page', function () {
+    $this->actingAs(User::factory()->create());
+    Patient::factory()->count(7)->create();
+
+    $this->get('/patients')->assertSee('Showing 1–6 of 7 patients');
+});
+
+it('filters prescription records to the patient selected from the directory', function () {
+    $this->actingAs(User::factory()->create());
+    $patient = Patient::factory()->create();
+    $otherPatient = Patient::factory()->create();
+    $prescription = Prescription::factory()->for($patient)->create(['medication' => 'Selected patient medicine']);
+    $otherPrescription = Prescription::factory()->for($otherPatient)->create(['medication' => 'Other patient medicine']);
+
+    $this->get(route('prescriptions', ['patient' => $patient->id]))
+        ->assertSee($prescription->medication)
+        ->assertDontSee($otherPrescription->medication);
+
+    Livewire::test(Prescriptions::class)
+        ->set('patientFilter', $patient->id)
+        ->set('search', 'Other patient medicine')
+        ->assertDontSee($otherPrescription->medication);
 });
 
 it('creates and updates a patient record', function () {

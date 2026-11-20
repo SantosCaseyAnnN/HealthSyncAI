@@ -165,7 +165,7 @@ class Appointments extends Component
     public function render(): View
     {
         $appointmentsQuery = Appointment::query()
-            ->withCount(['medicalRecords', 'labOrders'])
+            ->withCount('medicalRecords')
             ->whereDate('scheduled_at', $this->selectedDate)
             ->when($this->patientFilter, fn ($query) => $query->where('patient_id', $this->patientFilter));
 

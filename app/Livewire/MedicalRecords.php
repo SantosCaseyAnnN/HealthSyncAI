@@ -192,7 +192,7 @@ class MedicalRecords extends Component
     private function recordsQuery(): Builder
     {
         return MedicalRecord::query()
-            ->with(['patient', 'appointment', 'labOrders'])
+            ->with(['patient', 'appointment'])
             ->when($this->patientFilter, fn ($query) => $query->where('patient_id', $this->patientFilter))
             ->when($this->search !== '', function ($query) {
                 $search = '%'.$this->search.'%';

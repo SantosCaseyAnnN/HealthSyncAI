@@ -5,7 +5,6 @@ use App\Http\Controllers\PatientQrCodeController;
 use App\Livewire\AdminUsers;
 use App\Livewire\Appointments;
 use App\Livewire\CheckIns;
-use App\Livewire\Laboratory;
 use App\Livewire\MedicalRecords;
 use App\Livewire\PatientProfile;
 use App\Livewire\Patients;
@@ -92,7 +91,6 @@ Route::middleware([
         Route::get('/patients/{patient}/qr', PatientQrCodeController::class)->name('patients.qr');
         Route::get('/appointments', Appointments::class)->name('appointments');
         Route::get('/medical-records', MedicalRecords::class)->name('medical-records');
-        Route::get('/laboratory', Laboratory::class)->name('laboratory');
         Route::get('/prescriptions', Prescriptions::class)->name('prescriptions');
         Route::get('/check-ins', CheckIns::class)->name('check-ins.index');
     });

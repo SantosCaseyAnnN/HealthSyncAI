@@ -8,6 +8,7 @@ use App\Models\Patient;
 use App\Models\Prescription;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -21,6 +22,9 @@ class Prescriptions extends Component
     public bool $showForm = false;
 
     public ?int $editingPrescriptionId = null;
+
+    #[Url(as: 'patient')]
+    public ?int $patientFilter = null;
 
     public ?int $patientId = null;
 
@@ -57,6 +61,7 @@ class Prescriptions extends Component
     public function openForm(): void
     {
         $this->resetForm();
+        $this->patientId = $this->patientFilter;
         $this->issuedAt = now()->format('Y-m-d\TH:i');
         $this->showForm = true;
     }
@@ -146,12 +151,14 @@ class Prescriptions extends Component
         return view('livewire.prescriptions', [
             'prescriptions' => Prescription::query()
                 ->with(['patient:id,patient_number,first_name,last_name', 'prescribedBy:id,name'])
-                ->when($this->search !== '', fn ($query) => $query
-                    ->where('medication', 'like', $search)
-                    ->orWhereHas('patient', fn ($query) => $query
-                        ->where('patient_number', 'like', $search)
-                        ->orWhere('first_name', 'like', $search)
-                        ->orWhere('last_name', 'like', $search)))
+                ->when($this->patientFilter, fn ($query) => $query->where('patient_id', $this->patientFilter))
+                ->when($this->search !== '', fn ($query) => $query->where(function ($query) use ($search) {
+                    $query->where('medication', 'like', $search)
+                        ->orWhereHas('patient', fn ($query) => $query
+                            ->where('patient_number', 'like', $search)
+                            ->orWhere('first_name', 'like', $search)
+                            ->orWhere('last_name', 'like', $search));
+                }))
                 ->orderByDesc('issued_at')
                 ->orderByDesc('id')
                 ->paginate(15),

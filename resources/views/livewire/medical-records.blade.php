@@ -175,20 +175,6 @@
                         </div>
                     </div>
 
-                    <div class="attached-documents">
-                        <div class="documents-heading">
-                            <strong>Related Laboratory Orders</strong>
-                            <a href="{{ route('laboratory', ['patient' => $selectedRecord->patient_id]) }}">Open laboratory</a>
-                        </div>
-                        @forelse ($selectedRecord->labOrders as $labOrder)
-                            <div class="document-item">
-                                <span class="pdf-icon">▤</span>
-                                <div><strong>{{ $labOrder->test_name }} · {{ $labOrder->order_number }}</strong><small>{{ str($labOrder->status)->replace('_', ' ')->title() }}</small></div>
-                            </div>
-                        @empty
-                            <p class="schedule-note">No laboratory orders are linked to this record.</p>
-                        @endforelse
-                    </div>
                 </section>
             @else
                 <section class="record-preview no-selection"><p>Select a record to view its patient and clinical details.</p></section>

@@ -4,10 +4,24 @@
         @include('livewire.partials.workspace-topbar', ['section' => 'Clinic / Prescription records'])
 
         <div class="page-heading">
-            <div><h2>Prescription records</h2><p>Authorized clinic workspace for maintaining patient-linked prescription records.</p></div>
+            <div>
+                <h2>Prescription records</h2>
+                <p>
+                    @if ($patientFilter)
+                        Showing prescriptions for the selected patient.
+                    @else
+                        Authorized clinic workspace for maintaining patient-linked prescription records.
+                    @endif
+                </p>
+            </div>
             <button type="button" class="primary-button" wire:click="openForm">Add prescription</button>
         </div>
         @if (session()->has('status')) <p class="clinical-notice" role="status">{{ session('status') }}</p> @endif
+        @if ($patientFilter)
+            <p class="clinical-notice">
+                <a href="{{ route('prescriptions') }}">View all prescription records</a>
+            </p>
+        @endif
         @if ($showForm)
             <section class="directory-panel clinical-form-panel">
                 <div class="panel-heading"><strong>{{ $editingPrescriptionId ? 'Edit prescription' : 'New prescription record' }}</strong><button type="button" wire:click="cancelForm" class="small-outline-button">Close</button></div>
