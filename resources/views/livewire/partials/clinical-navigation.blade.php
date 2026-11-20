@@ -1,34 +1,46 @@
 <aside class="sidebar">
     <div class="brand">
-        <h2>HealthSyncAI</h2>
-        <p>Clinical Workflow Health</p>
-        <small>Information System</small>
+        <span class="brand-mark" aria-hidden="true">H</span>
+        <div>
+            <h2>HealthSyncAI</h2>
+            <p>Clinical Workflow</p>
+            <small>Health Information System</small>
+        </div>
     </div>
 
-    <div class="nav-title">NAVIGATION</div>
+    <div class="nav-title">WORKSPACE</div>
 
     <nav class="navigation">
-        <a href="{{ route('dashboard') }}" @class(['nav-item', 'active' => $active === 'dashboard'])>
-            <span>▦</span> Clinic overview
-        </a>
-        <a href="{{ route('patients') }}" @class(['nav-item', 'active' => $active === 'patients'])>
-            <span>♙</span> Patients
-        </a>
-        <a href="{{ route('appointments') }}" @class(['nav-item', 'active' => $active === 'appointments'])>
-            <span>▣</span> Appointments
-        </a>
-        <a href="{{ route('medical-records') }}" @class(['nav-item', 'active' => $active === 'medical-records'])>
-            <span>▤</span> Medical Records
-        </a>
-        <a href="{{ route('laboratory') }}" @class(['nav-item', 'active' => $active === 'laboratory'])>
-            <span>♧</span> Laboratory
-        </a>
-        <a href="{{ route('prescriptions') }}" @class(['nav-item', 'active' => $active === 'prescriptions'])>
-            <span>Rx</span> Prescriptions
-        </a>
-        <a href="{{ route('check-ins.index') }}" @class(['nav-item', 'active' => $active === 'check-ins'])>
-            <span>↪</span> Check-ins & queue
-        </a>
+        @if (auth()->user()->isAdmin())
+            <a href="{{ route('admin.accounts') }}" @class(['nav-item', 'active' => $active === 'admin'])>
+                <span aria-hidden="true">▤</span> User accounts
+            </a>
+            <a href="{{ route('dashboard') }}" @class(['nav-item', 'active' => $active === 'dashboard'])>
+                <span aria-hidden="true">▦</span> Clinic overview
+            </a>
+        @else
+            <a href="{{ route('dashboard') }}" @class(['nav-item', 'active' => $active === 'dashboard'])>
+                <span aria-hidden="true">▦</span> Overview
+            </a>
+            <a href="{{ route('check-ins.index') }}" @class(['nav-item', 'active' => $active === 'check-ins'])>
+                <span aria-hidden="true">↪</span> Patient check-in
+            </a>
+            <a href="{{ route('patients') }}" @class(['nav-item', 'active' => $active === 'patients'])>
+                <span aria-hidden="true">♙</span> Patient records
+            </a>
+            <a href="{{ route('appointments') }}" @class(['nav-item', 'active' => $active === 'appointments'])>
+                <span aria-hidden="true">▣</span> Appointments & queue
+            </a>
+            <a href="{{ route('medical-records') }}" @class(['nav-item', 'active' => $active === 'medical-records'])>
+                <span aria-hidden="true">▤</span> Medical Records
+            </a>
+            <a href="{{ route('laboratory') }}" @class(['nav-item', 'active' => $active === 'laboratory'])>
+                <span aria-hidden="true">♧</span> Laboratory
+            </a>
+            <a href="{{ route('prescriptions') }}" @class(['nav-item', 'active' => $active === 'prescriptions'])>
+                <span aria-hidden="true">Rx</span> Prescription records
+            </a>
+        @endif
     </nav>
 
     <div class="sidebar-user">

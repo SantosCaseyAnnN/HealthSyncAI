@@ -2,6 +2,8 @@
     @include('livewire.partials.clinical-navigation', ['active' => 'laboratory'])
 
     <main class="main-content">
+        @include('livewire.partials.workspace-topbar', ['section' => 'Clinic / Laboratory'])
+
         <div class="page-heading">
             <div>
                 <h2>Laboratory</h2>

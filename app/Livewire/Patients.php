@@ -21,6 +21,8 @@ class Patients extends Component
 
     public string $gender = '';
 
+    public ?int $selectedPatientId = null;
+
     public bool $showForm = false;
 
     public ?int $editingPatientId = null;
@@ -94,10 +96,16 @@ class Patients extends Component
         $this->showForm = true;
     }
 
+    public function selectPatient(int $patientId): void
+    {
+        $this->selectedPatientId = Patient::query()->findOrFail($patientId)->id;
+    }
+
     public function editPatient(int $patientId): void
     {
         $patient = Patient::findOrFail($patientId);
 
+        $this->selectedPatientId = $patient->id;
         $this->editingPatientId = $patient->id;
         $this->firstName = $patient->first_name;
         $this->lastName = $patient->last_name;
@@ -193,9 +201,12 @@ class Patients extends Component
                 ...$attributes,
             ]);
 
+            $this->selectedPatientId = $patient->id;
             session()->flash('status', "Patient {$patient->patient_number} was created.");
         } else {
-            Patient::findOrFail($this->editingPatientId)->update($attributes);
+            $patient = Patient::findOrFail($this->editingPatientId);
+            $patient->update($attributes);
+            $this->selectedPatientId = $patient->id;
 
             session()->flash('status', 'Patient details were updated.');
         }
@@ -228,9 +239,12 @@ class Patients extends Component
             ->orderBy('last_name')
             ->orderBy('first_name')
             ->paginate(15);
+        $selectedPatient = $patients->getCollection()->firstWhere('id', $this->selectedPatientId)
+            ?? $patients->first();
 
         return view('livewire.patients', [
             'filteredPatients' => $patients,
+            'selectedPatient' => $selectedPatient,
         ]);
     }
 

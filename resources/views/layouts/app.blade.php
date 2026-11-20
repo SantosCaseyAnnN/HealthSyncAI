@@ -21,7 +21,9 @@
         <x-banner />
 
         <div class="min-h-screen bg-gray-100">
-            @livewire('navigation-menu')
+            @unless (request()->routeIs('dashboard'))
+                @livewire('navigation-menu')
+            @endunless
 
             <!-- Page Heading -->
             @if (isset($header))

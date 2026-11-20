@@ -1,6 +1,8 @@
 <div class="healthsync-dashboard">
     @include('livewire.partials.clinical-navigation', ['active' => 'check-ins'])
     <main class="main-content">
+        @include('livewire.partials.workspace-topbar', ['section' => 'Clinic / Patient check-in'])
+
         <div class="page-heading">
             <div><h2>Patient check-in</h2><p>Review QR check-in submissions before registering patients in today's queue.</p></div>
             @if ($nextPatient)

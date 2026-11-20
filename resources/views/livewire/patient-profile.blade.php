@@ -2,6 +2,8 @@
     @include('livewire.partials.clinical-navigation', ['active' => 'patients'])
 
     <main class="main-content">
+        @include('livewire.partials.workspace-topbar', ['section' => 'Clinic / Patient records'])
+
         <div class="page-heading">
             <div>
                 <h2>EHR Profile</h2>

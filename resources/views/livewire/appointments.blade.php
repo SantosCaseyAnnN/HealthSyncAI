@@ -2,9 +2,11 @@
     @include('livewire.partials.clinical-navigation', ['active' => 'appointments'])
 
     <main class="main-content">
+        @include('livewire.partials.workspace-topbar', ['section' => 'Clinic / Appointments & queue'])
+
         <div class="page-heading appointment-heading">
             <div>
-                <h2>Appointments</h2>
+                <h2>Appointments &amp; queue</h2>
                 <p>Schedule and monitor patient appointments.</p>
             </div>
             <div class="heading-actions">

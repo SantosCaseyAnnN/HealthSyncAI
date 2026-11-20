@@ -12,26 +12,26 @@
 }
 
 :root {
-    --hs-primary: #008b83;
-    --hs-primary-dark: #00766f;
-    --hs-primary-light: #edf9f7;
+    --hs-primary: #1c3559;
+    --hs-primary-dark: #122744;
+    --hs-primary-light: #eaf0f8;
 
-    --hs-background: #f7f9fb;
+    --hs-background: #f6f8fc;
     --hs-white: #ffffff;
 
-    --hs-text: #26394b;
-    --hs-secondary: #506172;
-    --hs-muted: #91a0ad;
+    --hs-text: #172b4d;
+    --hs-secondary: #475569;
+    --hs-muted: #64748b;
 
-    --hs-border: #dce5ec;
-    --hs-border-light: #edf1f5;
+    --hs-border: #e2e8f0;
+    --hs-border-light: #f1f5f9;
 
     --hs-success: #16846d;
     --hs-warning: #a36a12;
     --hs-info: #4385e9;
     --hs-danger: #c45c5c;
 
-    --hs-sidebar-width: 150px;
+    --hs-sidebar-width: 256px;
 }
 
 * {
@@ -1947,5 +1947,973 @@ textarea {
 
     .clinical-form-wide {
         grid-column: auto;
+    }
+}
+
+/* Clinical workspace visual system */
+.healthsync-dashboard {
+    color: #172b4d;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+}
+
+.healthsync-dashboard .sidebar {
+    width: 256px;
+    min-width: 256px;
+    background: #192f52;
+    border-right: 0;
+    box-shadow: 8px 0 24px rgba(15, 23, 42, .08);
+}
+
+.healthsync-dashboard .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 84px;
+    padding: 18px 20px;
+    border-bottom-color: #2a4163;
+}
+
+.healthsync-dashboard .brand-mark {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    place-items: center;
+    border-radius: 13px;
+    background: #fff;
+    color: #1c3559;
+    font-size: 20px;
+    font-weight: 700;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, .14);
+}
+
+.healthsync-dashboard .brand h2 {
+    color: #fff;
+    font-size: 16px;
+    letter-spacing: -.025em;
+}
+
+.healthsync-dashboard .brand p {
+    color: #cfdae8;
+    font-size: 11px;
+}
+
+.healthsync-dashboard .brand small {
+    margin-top: 2px;
+    color: #9fb0c6;
+    font-size: 10px;
+}
+
+.healthsync-dashboard .nav-title {
+    padding: 24px 20px 10px;
+    color: #93a8c2;
+    font-size: 10px;
+    letter-spacing: .12em;
+}
+
+.healthsync-dashboard .navigation {
+    padding: 0 12px;
+}
+
+.healthsync-dashboard .nav-item {
+    min-height: 42px;
+    gap: 12px;
+    padding: 9px 12px;
+    margin-bottom: 4px;
+    border-radius: 9px;
+    color: #d3deec;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.healthsync-dashboard .nav-item span {
+    width: 20px;
+    color: #a9bad0;
+    font-size: 15px;
+}
+
+.healthsync-dashboard .nav-item:hover,
+.healthsync-dashboard .nav-item.active {
+    border-color: #3a557a;
+    background: #30496c;
+    color: #fff;
+}
+
+.healthsync-dashboard .nav-item.active span {
+    color: #fff;
+}
+
+.healthsync-dashboard .sidebar-user {
+    min-height: 72px;
+    gap: 11px;
+    padding: 14px 18px;
+    font-size: 12px;
+    border-top-color: #2a4163;
+    background: #192f52;
+}
+
+.healthsync-dashboard .user-icon {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    background: #30496c;
+    color: #fff;
+    font-size: 16px;
+}
+
+.healthsync-dashboard .sidebar-user strong {
+    display: block;
+    max-width: 145px;
+    overflow: hidden;
+    color: #fff;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.healthsync-dashboard .sidebar-user small {
+    display: block;
+    margin-top: 3px;
+    color: #aebed2;
+    font-size: 11px;
+}
+
+.healthsync-dashboard .sidebar-user button {
+    padding: 7px;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #d3deec;
+}
+
+.healthsync-dashboard .sidebar-user button:hover {
+    background: #30496c;
+    color: #fff;
+}
+
+.healthsync-dashboard .main-content {
+    min-height: 100vh;
+    padding: 32px 36px 72px;
+    background: #f4f7fb;
+}
+
+.healthsync-dashboard .workspace-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 52px;
+    margin: -32px -36px 26px;
+    padding: 12px 36px;
+    border-bottom: 1px solid #e8edf4;
+    background: #fff;
+    color: #73839a;
+    font-size: 11px;
+}
+
+.healthsync-dashboard .workspace-topbar time {
+    color: #73839a;
+    font-size: 11px;
+}
+
+.healthsync-dashboard .page-heading,
+.healthsync-dashboard .dashboard-header,
+.healthsync-dashboard .medical-header {
+    min-height: 56px;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.healthsync-dashboard .page-heading h1,
+.healthsync-dashboard .page-heading h2,
+.healthsync-dashboard .dashboard-header h1,
+.healthsync-dashboard .medical-header h1 {
+    margin: 0;
+    color: #172b4d;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -.035em;
+    line-height: 1.2;
+}
+
+.healthsync-dashboard .page-heading p,
+.healthsync-dashboard .dashboard-header p,
+.healthsync-dashboard .medical-header p {
+    margin-top: 7px;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.healthsync-dashboard .primary-button {
+    min-height: 40px;
+    padding: 10px 16px;
+    border-radius: 9px;
+    background: #192f52;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: none;
+}
+
+.healthsync-dashboard .primary-button:hover {
+    background: #29456d;
+}
+
+.healthsync-dashboard .small-outline-button,
+.healthsync-dashboard .open-record-button {
+    min-height: 34px;
+    padding: 7px 11px;
+    border-color: #dbe3ee;
+    border-radius: 8px;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.healthsync-dashboard .small-outline-button:hover,
+.healthsync-dashboard .open-record-button:hover {
+    border-color: #cbd8e8;
+    background: #f2f6fb;
+    color: #192f52;
+}
+
+.healthsync-dashboard .stats-grid,
+.healthsync-dashboard .appointment-stats {
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.healthsync-dashboard .stat-card,
+.healthsync-dashboard .appointment-stat {
+    padding: 20px;
+    border-color: #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .025);
+}
+
+.healthsync-dashboard .stat-card span,
+.healthsync-dashboard .appointment-stat small {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.healthsync-dashboard .stat-card strong,
+.healthsync-dashboard .appointment-stat strong {
+    margin-top: 10px;
+    color: #172b4d;
+    font-size: 26px;
+    line-height: 1.1;
+}
+
+.healthsync-dashboard .stat-card small {
+    font-size: 11px;
+}
+
+.healthsync-dashboard .directory-panel,
+.healthsync-dashboard .panel,
+.healthsync-dashboard .patient-directory,
+.healthsync-dashboard .record-preview {
+    margin-bottom: 18px;
+    border-color: #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, .025);
+}
+
+.healthsync-dashboard .panel-heading,
+.healthsync-dashboard .medical-panel-heading {
+    min-height: 62px;
+    padding: 16px 20px;
+    border-color: #eef2f7;
+}
+
+.healthsync-dashboard .panel-heading strong,
+.healthsync-dashboard .medical-panel-heading strong,
+.healthsync-dashboard .panel-header h2 {
+    color: #1e293b;
+    font-size: 15px;
+    font-weight: 650;
+}
+
+.healthsync-dashboard .panel-heading small,
+.healthsync-dashboard .medical-panel-heading small,
+.healthsync-dashboard .panel-header p {
+    margin-top: 5px;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.healthsync-dashboard .panel-heading a,
+.healthsync-dashboard .panel-header a {
+    color: #315d96;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.healthsync-dashboard .health-table {
+    min-width: 760px;
+}
+
+.healthsync-dashboard .health-table th,
+.healthsync-dashboard thead th {
+    padding: 13px 12px;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 10px;
+    letter-spacing: .055em;
+}
+
+.healthsync-dashboard .health-table td,
+.healthsync-dashboard tbody td {
+    padding: 14px 12px;
+    color: #475569;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.healthsync-dashboard .health-table td strong,
+.healthsync-dashboard tbody td strong {
+    color: #1e293b;
+}
+
+.healthsync-dashboard .health-table td a {
+    color: #315d96;
+    font-size: 12px;
+}
+
+.healthsync-dashboard .status,
+.healthsync-dashboard .status-pill {
+    min-height: 24px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.healthsync-dashboard .filter-bar {
+    min-height: 54px;
+    gap: 12px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    border-color: #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 5px rgba(15, 23, 42, .02);
+}
+
+.healthsync-dashboard .filter-bar label {
+    gap: 7px;
+    color: #475569;
+    font-size: 12px;
+}
+
+.healthsync-dashboard .filter-select,
+.healthsync-dashboard .filter-bar label select {
+    min-height: 38px;
+    padding: 8px 11px;
+    border-color: #dbe3ee;
+    border-radius: 8px;
+    color: #334155;
+    font-size: 12px;
+}
+
+.healthsync-dashboard .search-box input,
+.healthsync-dashboard .medical-search input {
+    font-size: 13px;
+}
+
+.healthsync-dashboard .record-count {
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #edf2f8;
+    color: #315d96;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.healthsync-dashboard .table-footer {
+    padding: 14px 20px;
+    color: #64748b;
+    font-size: 11px;
+}
+
+.healthsync-dashboard .empty-state,
+.healthsync-dashboard .no-records {
+    padding: 32px 20px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.healthsync-dashboard .clinical-form {
+    padding: 20px;
+}
+
+.healthsync-dashboard .clinical-form-grid {
+    gap: 16px;
+}
+
+.healthsync-dashboard .clinical-form-grid label,
+.healthsync-dashboard .filter-bar label {
+    color: #334155;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.healthsync-dashboard .clinical-form-grid input,
+.healthsync-dashboard .clinical-form-grid select,
+.healthsync-dashboard .clinical-form-grid textarea,
+.healthsync-dashboard .filter-bar label select {
+    min-height: 42px;
+    padding: 9px 12px;
+    border-color: #dbe3ee;
+    border-radius: 8px;
+    color: #1e293b;
+    font-size: 13px;
+}
+
+.healthsync-dashboard .clinical-form-grid textarea {
+    min-height: 92px;
+}
+
+.healthsync-dashboard .clinical-form-grid input:focus,
+.healthsync-dashboard .clinical-form-grid select:focus,
+.healthsync-dashboard .clinical-form-grid textarea:focus,
+.healthsync-dashboard .filter-bar label select:focus {
+    border-color: #60a5fa;
+    outline: 3px solid rgba(37, 99, 235, .12);
+}
+
+.healthsync-dashboard .clinical-form-actions {
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.healthsync-dashboard .clinical-error {
+    font-size: 11px;
+}
+
+.healthsync-dashboard .clinical-notice {
+    margin-bottom: 16px;
+    padding: 13px 16px;
+    border-color: #bfdbfe;
+    border-radius: 10px;
+    background: #eff6ff;
+    color: #1e40af;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.healthsync-dashboard .date-navigation {
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    border-color: #e2e8f0;
+    border-radius: 12px;
+}
+
+.healthsync-dashboard .date-navigation small {
+    font-size: 10px;
+    letter-spacing: .06em;
+}
+
+.healthsync-dashboard .date-navigation strong {
+    color: #1e293b;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.healthsync-dashboard .date-buttons button,
+.healthsync-dashboard .view-toggle button {
+    min-height: 36px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #475569;
+    font-size: 12px;
+}
+
+.healthsync-dashboard .view-toggle button.selected {
+    background: #edf2f8;
+    color: #192f52;
+}
+
+.healthsync-dashboard .stat-icon {
+    padding: 11px;
+    border-radius: 10px;
+}
+
+.healthsync-dashboard .calendar-icon {
+    background: #edf2f8;
+    color: #315d96;
+}
+
+.healthsync-dashboard .medical-search,
+.healthsync-dashboard .record-summary {
+    min-height: 48px;
+    padding: 10px 14px;
+    border-color: #e2e8f0;
+    border-radius: 10px;
+}
+
+.healthsync-dashboard .records-layout {
+    grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+    gap: 20px;
+}
+
+.healthsync-dashboard .record-patient {
+    gap: 12px;
+    padding: 14px;
+}
+
+.healthsync-dashboard .record-patient-top strong,
+.healthsync-dashboard .preview-name strong {
+    color: #1e293b;
+    font-size: 13px;
+}
+
+.healthsync-dashboard .record-patient-top small,
+.healthsync-dashboard .record-updated,
+.healthsync-dashboard .record-activity {
+    color: #64748b;
+    font-size: 11px;
+}
+
+.healthsync-dashboard .record-preview-header {
+    padding: 20px;
+}
+
+.healthsync-dashboard .patient-details {
+    padding: 16px 20px;
+}
+
+.healthsync-dashboard .patient-details small,
+.healthsync-dashboard .latest-activity small {
+    color: #64748b;
+    font-size: 10px;
+}
+
+.healthsync-dashboard .patient-details strong,
+.healthsync-dashboard .latest-activity strong {
+    color: #1e293b;
+    font-size: 13px;
+}
+
+.healthsync-dashboard .clinical-notes,
+.healthsync-dashboard .attached-documents {
+    padding: 18px 20px;
+}
+
+.healthsync-dashboard .clinical-heading strong,
+.healthsync-dashboard .documents-heading strong {
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.healthsync-dashboard .clinical-heading small,
+.healthsync-dashboard .documents-heading small,
+.healthsync-dashboard .soap-card p,
+.healthsync-dashboard .document-item small {
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.healthsync-dashboard .soap-card,
+.healthsync-dashboard .document-item {
+    border-color: #e2e8f0;
+    border-radius: 10px;
+}
+
+.healthsync-dashboard .soap-card p {
+    font-size: 13px;
+}
+
+.healthsync-dashboard .appointment-stat {
+    gap: 14px;
+}
+
+.healthsync-dashboard .calendar-event {
+    gap: 18px;
+    padding: 16px 8px;
+    color: #334155;
+    font-size: 13px;
+}
+
+.healthsync-dashboard .calendar-event small {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.healthsync-dashboard .patient-records-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(280px, .8fr);
+    align-items: start;
+    gap: 18px;
+}
+
+.healthsync-dashboard .patient-records-grid .directory-panel {
+    min-width: 0;
+}
+
+.healthsync-dashboard .patient-summary-panel {
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, .025);
+}
+
+.healthsync-dashboard .patient-summary-header {
+    position: relative;
+    padding: 20px;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.healthsync-dashboard .patient-summary-header > p {
+    margin: 0 0 15px;
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.healthsync-dashboard .patient-summary-header .status-pill {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+}
+
+.healthsync-dashboard .patient-summary-header h3 {
+    margin: 0;
+    color: #172b4d;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.healthsync-dashboard .patient-summary-header > small {
+    display: block;
+    margin-top: 6px;
+    color: #73839a;
+    font-size: 11px;
+}
+
+.healthsync-dashboard .patient-summary-list {
+    display: grid;
+    gap: 13px;
+    margin: 0;
+    padding: 18px 20px;
+}
+
+.healthsync-dashboard .patient-summary-list > div {
+    display: grid;
+    gap: 4px;
+}
+
+.healthsync-dashboard .patient-summary-list dt,
+.healthsync-dashboard .patient-vitals-grid small {
+    color: #73839a;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .035em;
+}
+
+.healthsync-dashboard .patient-summary-list dd {
+    margin: 0;
+    color: #243b5a;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.healthsync-dashboard .patient-vitals-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 0 20px 18px;
+}
+
+.healthsync-dashboard .patient-vitals-grid > div {
+    display: grid;
+    gap: 6px;
+    padding: 11px;
+    border-radius: 8px;
+    background: #f4f7fb;
+}
+
+.healthsync-dashboard .patient-vitals-grid strong {
+    color: #1c3559;
+    font-size: 12px;
+}
+
+.healthsync-dashboard .patient-summary-actions {
+    display: grid;
+    gap: 9px;
+    padding: 0 20px 18px;
+}
+
+.healthsync-dashboard .patient-summary-actions .small-outline-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.healthsync-dashboard .patient-summary-links {
+    display: grid;
+    border-top: 1px solid #eef2f7;
+}
+
+.healthsync-dashboard .patient-summary-links a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #315d96;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.healthsync-dashboard .patient-summary-links a:hover {
+    background: #f8fafc;
+}
+
+.healthsync-dashboard .patient-summary-links a span {
+    color: #64748b;
+}
+
+.healthsync-dashboard .patient-summary-footnote {
+    margin: 0;
+    padding: 14px 20px;
+    color: #73839a;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.healthsync-dashboard .patient-select-button {
+    display: grid;
+    gap: 4px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #1e293b;
+    text-align: left;
+    cursor: pointer;
+}
+
+.healthsync-dashboard .patient-select-button strong {
+    color: inherit;
+    font-size: 12px;
+}
+
+.healthsync-dashboard .patient-select-button small {
+    color: #73839a;
+    font-size: 10px;
+}
+
+.healthsync-dashboard .health-table tr.selected-patient-row {
+    background: #f1f5fa;
+}
+
+@media (max-width: 1024px) {
+    .healthsync-dashboard .main-content {
+        padding: 28px 24px 64px;
+    }
+
+    .healthsync-dashboard .records-layout {
+        grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
+    }
+
+    .healthsync-dashboard .patient-records-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .healthsync-dashboard {
+        display: block;
+    }
+
+    .healthsync-dashboard .sidebar {
+        position: relative;
+        top: auto;
+        right: auto;
+        bottom: auto;
+        left: auto;
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        overflow: visible;
+        border-right: 0;
+        border-bottom: 1px solid #e2e8f0;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, .04);
+    }
+
+    .healthsync-dashboard .brand {
+        min-height: 70px;
+        padding: 13px 18px;
+    }
+
+    .healthsync-dashboard .brand-mark {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+    }
+
+    .healthsync-dashboard .nav-title {
+        display: none;
+    }
+
+    .healthsync-dashboard .navigation {
+        display: flex;
+        gap: 4px;
+        padding: 0 12px 12px;
+        overflow-x: auto;
+        scrollbar-width: thin;
+    }
+
+    .healthsync-dashboard .nav-item {
+        flex: 0 0 auto;
+        min-height: 38px;
+        margin: 0;
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .healthsync-dashboard .sidebar-user {
+        display: none;
+    }
+
+    .healthsync-dashboard .main-content {
+        min-height: 0;
+        margin-left: 0;
+        padding: 24px 18px 56px;
+    }
+
+    .healthsync-dashboard .workspace-topbar {
+        margin: -24px -18px 22px;
+        padding: 11px 18px;
+    }
+
+    .healthsync-dashboard .records-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .healthsync-dashboard .patient-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 520px) {
+    .healthsync-dashboard .main-content {
+        padding: 20px 14px 48px;
+    }
+
+    .healthsync-dashboard .workspace-topbar {
+        margin: -20px -14px 20px;
+        padding: 10px 14px;
+        font-size: 10px;
+    }
+
+    .healthsync-dashboard .workspace-topbar time {
+        font-size: 10px;
+    }
+
+    .healthsync-dashboard .page-heading,
+    .healthsync-dashboard .dashboard-header,
+    .healthsync-dashboard .medical-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .healthsync-dashboard .page-heading h1,
+    .healthsync-dashboard .page-heading h2,
+    .healthsync-dashboard .dashboard-header h1,
+    .healthsync-dashboard .medical-header h1 {
+        font-size: 23px;
+    }
+
+    .healthsync-dashboard .heading-actions {
+        width: 100%;
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .healthsync-dashboard .stats-grid,
+    .healthsync-dashboard .appointment-stats,
+    .healthsync-dashboard .patient-list {
+        grid-template-columns: 1fr;
+    }
+
+    .healthsync-dashboard .filter-bar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .healthsync-dashboard .search-box {
+        min-height: 36px;
+        flex-basis: auto;
+    }
+
+    .healthsync-dashboard .clinical-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .healthsync-dashboard .clinical-form-wide {
+        grid-column: auto;
+    }
+
+    .healthsync-dashboard .patient-details {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+}
+
+.healthsync-dashboard.no-sidebar {
+    display: block;
+}
+
+.healthsync-dashboard .pending-content {
+    min-height: 100vh;
+    padding: 24px;
+    background: #f4f7fb;
+}
+
+.healthsync-dashboard .pending-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 840px;
+    margin: 0 auto 32px;
+}
+
+.healthsync-dashboard .pending-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: #192f52;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.healthsync-dashboard .pending-brand .brand-mark {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+    background: #192f52;
+    color: #fff;
+}
+
+@media (max-width: 520px) {
+    .healthsync-dashboard .pending-content {
+        padding: 18px 14px;
+    }
+
+    .healthsync-dashboard .pending-header {
+        margin-bottom: 24px;
     }
 }

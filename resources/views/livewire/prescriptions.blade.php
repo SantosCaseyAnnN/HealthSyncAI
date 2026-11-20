@@ -1,6 +1,8 @@
 <div class="healthsync-dashboard">
     @include('livewire.partials.clinical-navigation', ['active' => 'prescriptions'])
     <main class="main-content">
+        @include('livewire.partials.workspace-topbar', ['section' => 'Clinic / Prescription records'])
+
         <div class="page-heading">
             <div><h2>Prescription records</h2><p>Authorized clinic workspace for maintaining patient-linked prescription records.</p></div>
             <button type="button" class="primary-button" wire:click="openForm">Add prescription</button>

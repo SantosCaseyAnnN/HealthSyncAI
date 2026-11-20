@@ -2,6 +2,8 @@
     @include('livewire.partials.clinical-navigation', ['active' => 'medical-records'])
 
     <main class="main-content medical-content">
+        @include('livewire.partials.workspace-topbar', ['section' => 'Clinic / Patient records'])
+
         <div class="page-heading">
             <div>
                 <h2>Medical Records</h2>

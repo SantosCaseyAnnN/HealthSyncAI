@@ -1,7 +1,7 @@
 <x-guest-layout>
     <main class="min-h-screen bg-slate-50 px-4 py-10 sm:px-6">
         <div class="mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-200/70 lg:grid-cols-[.8fr_1.2fr]">
-            <section class="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-sky-700 via-blue-700 to-indigo-800 p-10 text-white lg:flex">
+            <section class="relative hidden flex-col justify-between overflow-hidden bg-[#192f52] p-10 text-white lg:flex">
                 <div class="absolute -bottom-28 -left-24 size-96 rounded-full bg-cyan-300/20 blur-3xl"></div>
                 <div class="relative">
                     <span class="grid size-12 place-items-center rounded-2xl bg-white/15 text-2xl font-bold">H</span>
@@ -10,7 +10,7 @@
                 <div class="relative">
                     <p class="text-sm font-semibold uppercase tracking-[.22em] text-cyan-200">Join the care team</p>
                     <h1 class="mt-4 text-4xl font-semibold leading-tight tracking-tight">One workspace for better care coordination.</h1>
-                    <p class="mt-5 leading-7 text-blue-100">Choose your role to apply for the right HealthSyncAI workspace.</p>
+                    <p class="mt-5 leading-7 text-blue-100">Submit a clinic-staff application for HealthSyncAI workspace access.</p>
                 </div>
                 <p class="relative text-sm text-blue-200">Every new account is reviewed by an administrator.</p>
             </section>
@@ -74,7 +74,7 @@
                         <div class="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm leading-5 text-blue-900">
                             Applications are reviewed by an administrator. Access is enabled only after approval.
                         </div>
-                        <button type="submit" class="w-full rounded-xl bg-blue-700 px-4 py-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800">Submit application</button>
+                        <button type="submit" class="w-full rounded-xl bg-[#192f52] px-4 py-3 font-semibold text-white transition hover:bg-[#29456c]">Submit application</button>
                     </form>
 
                     <p class="mt-6 text-center text-sm text-slate-600">Already have an account?

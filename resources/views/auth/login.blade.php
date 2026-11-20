@@ -1,6 +1,6 @@
 <x-guest-layout>
     <main class="min-h-screen bg-slate-50 lg:grid lg:grid-cols-[1.05fr_.95fr]">
-        <section class="relative hidden min-h-screen overflow-hidden bg-gradient-to-br from-sky-700 via-blue-700 to-indigo-800 p-12 text-white lg:flex lg:flex-col lg:justify-between">
+        <section class="relative hidden min-h-screen overflow-hidden bg-[#192f52] p-12 text-white lg:flex lg:flex-col lg:justify-between">
             <div class="absolute -right-28 -top-20 size-96 rounded-full bg-cyan-300/20 blur-3xl"></div>
             <div class="relative flex items-center gap-3">
                 <span class="grid size-12 place-items-center rounded-2xl bg-white/15 text-2xl font-bold">H</span>
@@ -55,7 +55,7 @@
                             <input name="remember" type="checkbox" class="rounded border-slate-300 text-blue-700 focus:ring-blue-600">
                             Remember me
                         </label>
-                        <button type="submit" class="w-full rounded-xl bg-blue-700 px-4 py-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800">Sign in</button>
+                        <button type="submit" class="w-full rounded-xl bg-[#192f52] px-4 py-3 font-semibold text-white transition hover:bg-[#29456c]">Sign in</button>
                     </form>
 
                     <p class="mt-7 text-center text-sm text-slate-600">New to HealthSyncAI?

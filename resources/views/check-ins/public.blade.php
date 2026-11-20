@@ -1,8 +1,15 @@
 <x-guest-layout>
-    <main class="min-h-screen bg-slate-50 px-4 py-10 sm:px-6">
-        <div class="mx-auto max-w-2xl rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 sm:p-10">
-            <a href="{{ route('login') }}" class="text-sm font-semibold text-blue-700">HealthSyncAI</a>
-            <p class="mt-8 text-sm font-semibold text-blue-700">CLINIC CHECK-IN</p>
+    <main class="min-h-screen bg-slate-50">
+        <header class="border-b border-slate-200 bg-white">
+            <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+                <a href="{{ route('login') }}" class="font-semibold tracking-tight text-slate-900">HealthSyncAI <span class="ml-2 text-[10px] font-medium uppercase tracking-wide text-slate-500">Clinic portal</span></a>
+                <span class="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Public check-in · No account required</span>
+            </div>
+        </header>
+
+        <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,.65fr)] lg:py-12">
+        <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+            <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Clinic check-in</p>
             <h1 class="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Share your check-in details</h1>
             <p class="mt-3 text-sm leading-6 text-slate-600">This QR code is linked to a clinic record. Submit your basic details for staff review. Submitting this form does not place you in the queue; clinic staff will verify it first.</p>
 
@@ -88,9 +95,33 @@
                         @error('consent_given') <span class="block text-rose-600">{{ $message }}</span> @enderror
                     </span>
                 </label>
-                <button type="submit" class="w-full rounded-xl bg-blue-700 px-4 py-3 font-semibold text-white hover:bg-blue-800">Send for clinic review</button>
+                <button type="submit" class="w-full rounded-lg bg-[#192f52] px-4 py-3 font-semibold text-white hover:bg-[#29456c]">Submit for review <span aria-hidden="true">→</span></button>
             </form>
             <p class="mt-5 text-xs leading-5 text-slate-500">Please do not use this form for urgent medical needs. Contact clinic staff directly for urgent assistance.</p>
+        </section>
+
+        <aside class="rounded-2xl bg-[#192f52] p-6 text-white shadow-sm sm:p-7">
+            <p class="text-[10px] font-semibold uppercase tracking-wide text-blue-200">A simple start to your visit</p>
+            <h2 class="mt-2 text-xl font-semibold">How check-in works</h2>
+            <ol class="mt-7 space-y-6">
+                <li class="flex gap-4">
+                    <span class="text-xs font-semibold text-blue-200">01</span>
+                    <span><strong class="block text-sm">Submit your details</strong><small class="mt-1 block leading-5 text-blue-100">Complete this secure check-in form.</small></span>
+                </li>
+                <li class="flex gap-4">
+                    <span class="text-xs font-semibold text-blue-200">02</span>
+                    <span><strong class="block text-sm">Staff verification</strong><small class="mt-1 block leading-5 text-blue-100">Clinic staff review your information before registration.</small></span>
+                </li>
+                <li class="flex gap-4">
+                    <span class="text-xs font-semibold text-blue-200">03</span>
+                    <span><strong class="block text-sm">Join the queue</strong><small class="mt-1 block leading-5 text-blue-100">You’ll be queued after your details are verified.</small></span>
+                </li>
+            </ol>
+            <div class="mt-7 border-t border-white/15 pt-5 text-xs leading-5 text-blue-100">
+                <p>For urgent medical concerns, please speak to clinic staff directly.</p>
+                <p class="mt-4 text-blue-200">Your information is visible only to authorized clinic personnel.</p>
+            </div>
+        </aside>
         </div>
     </main>
 </x-guest-layout>

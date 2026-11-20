@@ -1,17 +1,25 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <p class="text-sm font-semibold text-blue-700">{{ auth()->user()->roleLabel() }} workspace</p>
-                <h1 class="mt-1 text-2xl font-semibold tracking-tight text-slate-900">Hello, {{ auth()->user()->first_name ?: auth()->user()->name }}</h1>
-            </div>
-            @if (auth()->user()->hasWorkspaceAccess())
-                <span class="rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700">Account active</span>
-            @endif
-        </div>
-    </x-slot>
+<div @class(['healthsync-dashboard', 'no-sidebar' => ! auth()->user()->hasWorkspaceAccess()])>
+    @if (auth()->user()->hasWorkspaceAccess())
+        @include('livewire.partials.clinical-navigation', ['active' => 'dashboard'])
+    @endif
 
-    <div class="min-h-[calc(100vh-5rem)] bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
+    <div @class([
+        'main-content' => auth()->user()->hasWorkspaceAccess(),
+        'pending-content' => ! auth()->user()->hasWorkspaceAccess(),
+    ])>
+        @if (auth()->user()->hasWorkspaceAccess())
+            @include('livewire.partials.workspace-topbar', ['section' => auth()->user()->isAdmin() ? 'Administration / Clinic overview' : 'Clinic / Overview'])
+        @else
+            <header class="pending-header">
+                <a href="{{ route('login') }}" class="pending-brand"><span class="brand-mark" aria-hidden="true">H</span> HealthSyncAI</a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="small-outline-button">Sign out</button>
+                </form>
+            </header>
+        @endif
+
         <div class="mx-auto max-w-7xl space-y-6">
             @if (session('status'))
                 <p class="rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4 text-sm text-blue-900" role="status">{{ session('status') }}</p>
@@ -38,10 +46,10 @@
                     <div class="flex flex-wrap items-start justify-between gap-4">
                         <div>
                             <p class="text-sm font-semibold text-blue-700">CLINIC WORKFLOW</p>
-                            <h2 class="mt-2 text-2xl font-semibold text-slate-900">Today at your clinic</h2>
+                            <h2 class="mt-2 text-2xl font-semibold text-slate-900">Good morning, {{ auth()->user()->first_name ?: auth()->user()->name }}</h2>
                             <p class="mt-2 text-sm text-slate-500">Patient and care-team tools for authorized clinic staff.</p>
                         </div>
-                        <a href="{{ route('patients') }}" class="rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800">Open patient directory</a>
+                        <a href="{{ route('patients') }}" class="rounded-lg bg-[#192f52] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#29456c]">Open patient directory</a>
                     </div>
                     <div class="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                         @foreach ($stats as $label => $value)
@@ -66,7 +74,7 @@
                                 <h2 class="text-lg font-semibold text-slate-900">Patient check-in review</h2>
                                 <p class="mt-1 text-sm text-slate-500">Verify patient details before adding check-ins to the queue.</p>
                             </div>
-                            <a href="{{ route('check-ins.index') }}" class="text-sm font-semibold text-blue-700">View all</a>
+                            <a href="{{ route('check-ins.index') }}" class="text-sm font-semibold text-[#315d96]">View all</a>
                         </div>
                         <div class="mt-4 divide-y divide-slate-100">
                             @forelse ($pendingCheckIns as $checkIn)
@@ -75,14 +83,14 @@
                                         <span class="block text-sm font-semibold text-slate-900">{{ $checkIn->first_name }} {{ $checkIn->last_name }}</span>
                                         <span class="block text-xs text-slate-500">{{ $checkIn->created_at->format('h:i A') }} · QR check-in</span>
                                     </span>
-                                    <span class="text-sm font-semibold text-blue-700">Review →</span>
+                                    <span class="text-sm font-semibold text-[#315d96]">Review →</span>
                                 </a>
                             @empty
                                 <p class="py-5 text-sm text-slate-500">No check-ins are awaiting review.</p>
                             @endforelse
                         </div>
                     </div>
-                    <aside class="rounded-3xl bg-slate-900 p-6 text-white">
+                    <aside class="rounded-2xl bg-[#192f52] p-6 text-white">
                         <p class="text-xs font-semibold uppercase tracking-wide text-blue-200">Workflow estimate</p>
                         <h2 class="mt-2 text-xl font-semibold">Estimated patient wait</h2>
                         <p class="mt-4 text-4xl font-semibold">{{ $estimatedQueueWait }} <span class="text-base font-medium text-slate-300">min</span></p>
@@ -117,7 +125,7 @@
                             <h2 class="mt-2 text-2xl font-semibold text-slate-900">Clinic overview</h2>
                             <p class="mt-2 text-sm text-slate-500">Review applications and maintain clinic staff and administrator accounts.</p>
                         </div>
-                        <a href="{{ route('admin.accounts') }}" class="rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800">Manage accounts</a>
+                        <a href="{{ route('admin.accounts') }}" class="rounded-lg bg-[#192f52] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#29456c]">Manage accounts</a>
                     </div>
                     <p class="mt-6 text-sm text-slate-600">This overview shows aggregate clinic activity only. Patient records and queue details remain restricted to authorized clinic staff.</p>
                     <div class="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -147,4 +155,5 @@
             @endif
         </div>
     </div>
+</div>
 </x-app-layout>

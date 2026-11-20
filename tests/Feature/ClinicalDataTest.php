@@ -69,6 +69,18 @@ it('escapes patient-provided content in the directory', function () {
         ->assertDontSee('<script>alert(1)</script>', false);
 });
 
+it('shows the selected patient summary in the directory', function () {
+    $this->actingAs(User::factory()->create());
+    $patient = Patient::factory()->create(['address' => 'Quezon City, Metro Manila']);
+    $otherPatient = Patient::factory()->create(['address' => 'Makati City']);
+
+    Livewire::test(Patients::class)
+        ->call('selectPatient', $patient->id)
+        ->assertSet('selectedPatientId', $patient->id)
+        ->assertSee($patient->address)
+        ->assertDontSee($otherPatient->address);
+});
+
 it('creates and updates a patient record', function () {
     $this->actingAs(User::factory()->create());
 

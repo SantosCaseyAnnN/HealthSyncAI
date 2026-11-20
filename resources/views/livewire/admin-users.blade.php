@@ -1,5 +1,10 @@
-<div class="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-7xl space-y-6">
+<div class="healthsync-dashboard">
+    @include('livewire.partials.clinical-navigation', ['active' => 'admin'])
+
+    <main class="main-content">
+        @include('livewire.partials.workspace-topbar', ['section' => 'Administration / User accounts'])
+
+        <div class="mx-auto max-w-7xl space-y-6">
         <header class="flex flex-wrap items-end justify-between gap-4">
             <div>
                 <div class="flex gap-4 text-sm font-medium">
@@ -7,9 +12,9 @@
                     <span class="text-slate-400">/</span>
                     <span class="text-slate-500">User accounts</span>
                 </div>
-                <p class="mt-5 text-sm font-semibold text-blue-700">ADMIN WORKSPACE</p>
-                <h1 class="mt-1 text-3xl font-semibold tracking-tight text-slate-900">Accounts and applications</h1>
-                <p class="mt-2 text-sm text-slate-500">{{ $pendingCount }} application(s) awaiting review.</p>
+                <p class="mt-5 text-sm font-semibold text-slate-500">ADMINISTRATION</p>
+                <h1 class="mt-1 text-3xl font-semibold tracking-tight text-slate-900">Account administration</h1>
+                <p class="mt-2 text-sm text-slate-500">Manage clinic staff access and account details. {{ $pendingCount }} application(s) awaiting review.</p>
             </div>
         </header>
 
@@ -68,7 +73,7 @@
                         @error('role') <small class="text-rose-600">{{ $message }}</small> @enderror
                     </label>
                     <div class="flex items-end gap-3">
-                        <button type="submit" class="rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800">Save account</button>
+                        <button type="submit" class="rounded-lg bg-[#192f52] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#29456c]">Save account</button>
                         <button type="button" wire:click="cancelEdit" class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700">Cancel</button>
                     </div>
                 </form>
@@ -134,5 +139,6 @@
             </div>
             <div class="border-t border-slate-200 px-5 py-4">{{ $accounts->links() }}</div>
         </section>
-    </div>
+        </div>
+    </main>
 </div>
