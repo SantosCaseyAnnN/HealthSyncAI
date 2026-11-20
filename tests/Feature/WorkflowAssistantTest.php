@@ -25,3 +25,24 @@ it('guides administrators to account management without exposing clinic links', 
         ->assertSee('href="'.route('admin.accounts').'"', false)
         ->assertDontSee(route('patients'), false);
 });
+
+it('opens and closes the assistant panel', function () {
+    $this->actingAs(User::factory()->create());
+
+    Livewire::test(WorkflowAssistant::class)
+        ->assertSet('isOpen', false)
+        ->assertDontSee('Not sure where to go?')
+        ->call('toggle')
+        ->assertSet('isOpen', true)
+        ->assertSee('Not sure where to go?')
+        ->call('close')
+        ->assertSet('isOpen', false)
+        ->assertDontSee('Not sure where to go?');
+});
+
+it('shows the assistant launcher in the patient registration workspace', function () {
+    $this->actingAs(User::factory()->create())
+        ->get(route('patients'))
+        ->assertSee('AI assistant')
+        ->assertSee('Register Patient');
+});

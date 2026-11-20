@@ -9,6 +9,8 @@ use Livewire\Component;
 
 class WorkflowAssistant extends Component
 {
+    public bool $isOpen = false;
+
     public string $question = '';
 
     public string $answer = '';
@@ -23,6 +25,7 @@ class WorkflowAssistant extends Component
     public function ask(): void
     {
         $this->authorizeWorkspace();
+        $this->isOpen = true;
 
         $this->question = Str::squish($this->question);
         $validated = $this->validate([
@@ -41,6 +44,18 @@ class WorkflowAssistant extends Component
 
         $this->answer = $destination['answer'];
         $this->destinationRoute = $destination['route'];
+    }
+
+    public function toggle(): void
+    {
+        $this->authorizeWorkspace();
+        $this->isOpen = ! $this->isOpen;
+    }
+
+    public function close(): void
+    {
+        $this->authorizeWorkspace();
+        $this->isOpen = false;
     }
 
     public function askSuggestedQuestion(string $question): void

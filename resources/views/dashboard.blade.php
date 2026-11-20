@@ -66,7 +66,6 @@
                         <a href="{{ route('prescriptions') }}" class="rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:bg-blue-50">Prescription records</a>
                     </div>
                 </section>
-                <livewire:workflow-assistant />
                 <section class="grid grid-cols-1 gap-6 lg:grid-cols-[1.4fr_.8fr]">
                     <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                         <div class="flex items-center justify-between gap-3">
@@ -137,7 +136,6 @@
                         @endforeach
                     </div>
                 </section>
-                <livewire:workflow-assistant />
             @endif
 
             @if ($notifications->isNotEmpty())

@@ -10,7 +10,7 @@ it('renders role-specific clinic dashboard links', function () {
         ->assertOk()
         ->assertSee('Good morning, '.$user->first_name)
         ->assertSee('Patient check-in review')
-        ->assertSee('Not sure where to go?')
+        ->assertSee('AI assistant')
         ->assertSee('href="'.route('dashboard').'"', false)
         ->assertSee('href="'.route('patients').'"', false)
         ->assertSee('href="'.route('appointments').'"', false)
@@ -41,7 +41,7 @@ it('gives administrators clinic overview totals without patient queue details', 
         ->assertOk()
         ->assertSee('Clinic overview')
         ->assertSee('Manage accounts')
-        ->assertSee('Not sure where to go?')
+        ->assertSee('AI assistant')
         ->assertSee('Patient records and queue details remain restricted')
         ->assertDontSee('Patient check-in review');
 });

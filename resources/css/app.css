@@ -3101,3 +3101,156 @@ textarea {
         margin-bottom: 24px;
     }
 }
+
+.healthsync-dashboard .workflow-assistant-widget {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.healthsync-dashboard .workflow-assistant-widget .workflow-assistant {
+    width: min(390px, calc(100vw - 32px));
+    max-height: min(620px, calc(100vh - 112px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    box-shadow: 0 16px 42px rgba(15, 23, 42, .2);
+}
+
+.healthsync-dashboard .workflow-assistant-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.healthsync-dashboard .workflow-assistant-close {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    place-items: center;
+    border: 1px solid #dce5f0;
+    border-radius: 9px;
+    background: #fff;
+    color: #45617f;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.healthsync-dashboard .workflow-assistant-launcher {
+    display: inline-flex;
+    min-height: 56px;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: 999px;
+    background: #192f52;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .22);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.healthsync-dashboard .workflow-assistant-launcher:hover {
+    background: #29456c;
+}
+
+.healthsync-dashboard .workflow-assistant-launcher:focus-visible,
+.healthsync-dashboard .workflow-assistant-close:focus-visible {
+    outline: 3px solid #60a5fa;
+    outline-offset: 3px;
+}
+
+.healthsync-dashboard .workflow-assistant-launcher-mark {
+    font-size: 17px;
+}
+
+@media (max-width: 760px) {
+    .healthsync-dashboard .workflow-assistant-widget {
+        right: max(12px, env(safe-area-inset-right));
+        bottom: max(12px, env(safe-area-inset-bottom));
+    }
+
+    .healthsync-dashboard .workflow-assistant-widget .workflow-assistant {
+        width: min(390px, calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+        max-height: calc(100vh - 100px);
+    }
+
+    @supports (height: 100dvh) {
+        .healthsync-dashboard .workflow-assistant-widget .workflow-assistant {
+            max-height: calc(100dvh - 100px);
+        }
+    }
+
+    .healthsync-dashboard .workflow-assistant-suggestions button {
+        min-height: 42px;
+        padding: 9px 12px;
+        font-size: 12px;
+    }
+
+    .healthsync-dashboard .clinical-form-grid input,
+    .healthsync-dashboard .clinical-form-grid select,
+    .healthsync-dashboard .clinical-form-grid textarea {
+        min-height: 48px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 520px) {
+    .healthsync-dashboard .workflow-assistant-widget .workflow-assistant {
+        padding: 16px;
+    }
+
+    .healthsync-dashboard .workflow-assistant-form {
+        flex-direction: row;
+    }
+
+    .healthsync-dashboard .workflow-assistant-form input {
+        min-height: 48px;
+        font-size: 16px;
+    }
+
+    .healthsync-dashboard .workflow-assistant-form button {
+        min-height: 48px;
+    }
+
+    .healthsync-dashboard .workflow-assistant-launcher {
+        min-height: 54px;
+        padding: 0 17px;
+    }
+
+    .healthsync-dashboard .page-heading > .primary-button,
+    .healthsync-dashboard .clinical-form-actions > .primary-button,
+    .healthsync-dashboard .clinical-form-actions > .small-outline-button {
+        width: 100%;
+        min-height: 48px;
+    }
+
+    .healthsync-dashboard .clinical-form-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .healthsync-dashboard .patient-search-row .search-box {
+        width: 100%;
+        min-height: 48px;
+    }
+
+    .healthsync-dashboard .patient-summary-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .healthsync-dashboard .patient-summary-actions > * {
+        width: 100%;
+        min-height: 48px;
+    }
+}

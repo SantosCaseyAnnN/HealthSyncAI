@@ -49,3 +49,5 @@
         </form>
     </div>
 </aside>
+
+<livewire:workflow-assistant />
