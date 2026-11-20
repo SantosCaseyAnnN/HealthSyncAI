@@ -31,3 +31,15 @@ it('shows a pending application message after registration', function () {
 
     $this->get('/dashboard')->assertSee('awaiting review');
 });
+
+it('gives administrators clinic overview totals without patient queue details', function () {
+    $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+    $this->actingAs($admin)
+        ->get('/dashboard')
+        ->assertOk()
+        ->assertSee('Clinic overview')
+        ->assertSee('Manage accounts')
+        ->assertSee('Patient records and queue details remain restricted')
+        ->assertDontSee('Patient check-in review');
+});

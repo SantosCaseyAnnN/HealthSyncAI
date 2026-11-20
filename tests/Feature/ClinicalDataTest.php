@@ -78,6 +78,7 @@ it('creates and updates a patient record', function () {
         ->set('dateOfBirth', '1990-04-12')
         ->set('genderInput', 'Other')
         ->set('phone', '555-0101')
+        ->set('address', 'Quezon City, Metro Manila')
         ->set('provider', 'Dr. Morgan Lee')
         ->set('heightCm', '170')
         ->set('weightKg', '68')
@@ -97,6 +98,7 @@ it('creates and updates a patient record', function () {
         'patient_number' => $patient->patient_number,
         'last_name' => 'Rivera',
         'gender' => 'Other',
+        'address' => 'Quezon City, Metro Manila',
         'height_cm' => 170,
         'weight_kg' => 68,
         'bmi' => 23.53,

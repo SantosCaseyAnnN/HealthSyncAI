@@ -81,7 +81,7 @@ class AdminUsers extends Component
             ])],
         ]);
         $roleChanged = $user->role !== $validated['role'];
-        $requiresReview = $roleChanged && $validated['role'] === User::ROLE_CLINIC_STAFF && $user->role === User::ROLE_ADMIN;
+        $requiresReview = $roleChanged && $validated['role'] === User::ROLE_CLINIC_STAFF;
 
         $attributes = [
             'first_name' => $validated['firstName'],
@@ -149,6 +149,7 @@ class AdminUsers extends Component
     {
         $user = User::query()->findOrFail($userId);
         abort_unless(! $user->is($this->getCurrentUser()), 403);
+        abort_unless($user->isClinicStaff(), 422);
         abort_unless($user->approval_status === User::APPROVAL_APPROVED, 422);
 
         $user->forceFill(['is_active' => ! $user->is_active])->save();
@@ -193,6 +194,12 @@ class AdminUsers extends Component
                 ->where('role', User::ROLE_CLINIC_STAFF)
                 ->where('approval_status', User::APPROVAL_PENDING)
                 ->count(),
+            'clinicStaffCount' => User::query()->where('role', User::ROLE_CLINIC_STAFF)->count(),
+            'inactiveClinicStaffCount' => User::query()
+                ->where('role', User::ROLE_CLINIC_STAFF)
+                ->where('is_active', false)
+                ->count(),
+            'adminCount' => User::query()->where('role', User::ROLE_ADMIN)->count(),
         ]);
     }
 

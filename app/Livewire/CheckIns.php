@@ -16,11 +16,44 @@ class CheckIns extends Component
 
     public string $statusFilter = 'pending';
 
+    public function callNextPatient(): void
+    {
+        $checkIn = PatientCheckIn::query()
+            ->where('status', 'registered')
+            ->whereDate('check_in_date', today())
+            ->orderBy('queue_number')
+            ->firstOrFail();
+
+        $checkIn->forceFill([
+            'status' => 'in_consultation',
+            'reviewed_by_user_id' => auth()->id(),
+            'reviewed_at' => now(),
+        ])->save();
+
+        session()->flash('status', "Queue #{$checkIn->queue_number} has been called.");
+    }
+
+    public function completePatient(int $checkInId): void
+    {
+        $checkIn = PatientCheckIn::query()
+            ->where('status', 'in_consultation')
+            ->findOrFail($checkInId);
+
+        $checkIn->forceFill([
+            'status' => 'completed',
+            'reviewed_by_user_id' => auth()->id(),
+            'reviewed_at' => now(),
+        ])->save();
+
+        session()->flash('status', "Queue #{$checkIn->queue_number} has been completed.");
+    }
+
     public function registerInQueue(int $checkInId): void
     {
         $checkIn = PatientCheckIn::query()
             ->where('status', 'pending')
             ->findOrFail($checkInId);
+        abort_unless($checkIn->consent_given, 422);
 
         DB::transaction(function () use ($checkIn): void {
             $lastQueueNumber = PatientCheckIn::query()
@@ -37,6 +70,7 @@ class CheckIns extends Component
             ])->save();
 
             $patientAttributes = array_filter([
+                'address' => $checkIn->address,
                 'gender' => $checkIn->gender,
                 'height_cm' => $checkIn->height_cm,
                 'weight_kg' => $checkIn->weight_kg,
@@ -77,10 +111,16 @@ class CheckIns extends Component
 
     public function render(): View
     {
+        $nextPatient = PatientCheckIn::query()
+            ->where('status', 'registered')
+            ->whereDate('check_in_date', today())
+            ->orderBy('queue_number')
+            ->first();
+
         return view('livewire.check-ins', [
             'checkIns' => PatientCheckIn::query()
                 ->with(['patient:id,patient_number,first_name,last_name', 'reviewedBy:id,name'])
-                ->when($this->statusFilter === 'queue', fn ($query) => $query->where('status', 'registered')->whereDate('check_in_date', today()))
+                ->when($this->statusFilter === 'queue', fn ($query) => $query->whereIn('status', ['registered', 'in_consultation'])->whereDate('check_in_date', today()))
                 ->when(in_array($this->statusFilter, ['pending', 'rejected'], true), fn ($query) => $query->where('status', $this->statusFilter))
                 ->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
                 ->orderBy('queue_number')
@@ -88,9 +128,10 @@ class CheckIns extends Component
                 ->paginate(15),
             'pendingCount' => PatientCheckIn::query()->where('status', 'pending')->count(),
             'todayQueueCount' => PatientCheckIn::query()
-                ->where('status', 'registered')
+                ->whereIn('status', ['registered', 'in_consultation'])
                 ->whereDate('check_in_date', today())
                 ->count(),
+            'nextPatient' => $nextPatient,
         ]);
     }
 }

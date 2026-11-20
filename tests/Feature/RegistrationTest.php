@@ -42,3 +42,21 @@ test('new users can register', function () {
 })->skip(function () {
     return ! Features::enabled(Features::registration());
 }, 'Registration support is not enabled.');
+
+test('registration does not allow student or administrator roles', function () {
+    foreach (['student', 'admin'] as $role) {
+        $this->post('/register', [
+            'first_name' => 'Jamie',
+            'last_name' => 'Rivera',
+            'email' => "jamie-{$role}@example.com",
+            'role' => $role,
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
+        ])->assertSessionHasErrors('role');
+    }
+
+    $this->assertDatabaseMissing('users', ['email' => 'jamie-student@example.com']);
+    $this->assertDatabaseMissing('users', ['email' => 'jamie-admin@example.com']);
+})->skip(function () {
+    return ! Features::enabled(Features::registration());
+}, 'Registration support is not enabled.');

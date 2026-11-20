@@ -37,25 +37,51 @@ Route::middleware([
     Route::get('/dashboard', function () {
         $user = request()->user();
         $stats = [];
+        $pendingCheckIns = collect();
+        $todayQueue = collect();
 
-        if ($user->hasWorkspaceAccess() && $user->isClinicStaff()) {
-            $stats = [
+        if ($user->hasWorkspaceAccess() && ($user->isClinicStaff() || $user->isAdmin())) {
+            $clinicStats = [
                 'Patients' => Patient::query()->count(),
                 "Today's appointments" => Appointment::query()->whereDate('scheduled_at', today())->count(),
                 'Check-ins to review' => CheckIn::query()->where('status', 'pending')->count(),
                 'Active prescriptions' => Prescription::query()->where('status', 'active')->count(),
             ];
-        } elseif ($user->hasWorkspaceAccess() && $user->isAdmin()) {
-            $stats = [
-                'Applications to review' => User::query()->where('approval_status', User::APPROVAL_PENDING)
-                    ->where('role', User::ROLE_CLINIC_STAFF)->count(),
-                'Clinic staff accounts' => User::query()->where('role', User::ROLE_CLINIC_STAFF)->count(),
-                'Administrator accounts' => User::query()->where('role', User::ROLE_ADMIN)->count(),
-            ];
+            $stats = $user->isAdmin()
+                ? [
+                    'Patients in clinic records' => $clinicStats['Patients'],
+                    "Today's appointments" => $clinicStats["Today's appointments"],
+                    'Check-ins awaiting review' => $clinicStats['Check-ins to review'],
+                    'Clinic staff accounts' => User::query()->where('role', User::ROLE_CLINIC_STAFF)->count(),
+                ]
+                : $clinicStats;
+
+            if ($user->isClinicStaff()) {
+                $pendingCheckIns = CheckIn::query()
+                    ->with('patient:id,patient_number,first_name,last_name')
+                    ->where('status', 'pending')
+                    ->latest()
+                    ->limit(4)
+                    ->get();
+                $todayQueue = CheckIn::query()
+                    ->with('patient:id,patient_number,first_name,last_name')
+                    ->whereIn('status', ['registered', 'in_consultation'])
+                    ->whereDate('check_in_date', today())
+                    ->orderBy('queue_number')
+                    ->limit(5)
+                    ->get();
+            }
         }
+        $lastQueueNumber = CheckIn::query()
+            ->whereIn('status', ['registered', 'in_consultation'])
+            ->whereDate('check_in_date', today())
+            ->max('queue_number');
 
         return view('dashboard', [
             'stats' => $stats,
+            'pendingCheckIns' => $pendingCheckIns,
+            'todayQueue' => $todayQueue,
+            'estimatedQueueWait' => max(0, ((int) $lastQueueNumber) - 1) * 15,
             'notifications' => $user->unreadNotifications()->latest()->limit(5)->get(),
         ]);
     })->name('dashboard');

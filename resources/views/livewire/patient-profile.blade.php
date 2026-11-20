@@ -37,6 +37,8 @@
                 <div class="clinical-form-grid">
                     <div><strong>Date of birth</strong><p>{{ $profilePatient->date_of_birth?->format('M j, Y') ?? 'Not recorded' }}</p></div>
                     <div><strong>Gender</strong><p>{{ $profilePatient->gender ?? 'Not recorded' }}</p></div>
+                    <div><strong>Contact</strong><p>{{ $profilePatient->phone ?? 'Not recorded' }}{{ $profilePatient->email ? ' · '.$profilePatient->email : '' }}</p></div>
+                    <div><strong>Address</strong><p>{{ $profilePatient->address ?? 'Not recorded' }}</p></div>
                     <div><strong>Blood type</strong><p>{{ $profilePatient->blood_type ?? 'Not recorded' }}</p></div>
                     <div><strong>Allergies</strong><p>{{ $profilePatient->allergies ?? 'None recorded' }}</p></div>
                     <div><strong>Medical history</strong><p>{{ $profilePatient->medical_history ?? 'Not recorded' }}</p></div>

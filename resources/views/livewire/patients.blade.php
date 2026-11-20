@@ -59,6 +59,10 @@
                             <input type="email" wire:model="email" maxlength="255">
                             @error('email') <small class="clinical-error">{{ $message }}</small> @enderror
                         </label>
+                        <label class="clinical-form-wide">Address
+                            <input type="text" wire:model="address" maxlength="255">
+                            @error('address') <small class="clinical-error">{{ $message }}</small> @enderror
+                        </label>
                         <label>Assigned provider
                             <input type="text" wire:model="provider" maxlength="150">
                             @error('provider') <small class="clinical-error">{{ $message }}</small> @enderror

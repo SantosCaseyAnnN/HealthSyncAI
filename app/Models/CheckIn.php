@@ -19,6 +19,8 @@ class CheckIn extends Model
         'date_of_birth',
         'phone',
         'email',
+        'address',
+        'consent_given',
         'reason_for_visit',
         'gender',
         'height_cm',
@@ -45,6 +47,7 @@ class CheckIn extends Model
             'weight_kg' => 'decimal:2',
             'temperature_c' => 'decimal:1',
             'oxygen_saturation' => 'decimal:2',
+            'consent_given' => 'boolean',
         ];
     }
 

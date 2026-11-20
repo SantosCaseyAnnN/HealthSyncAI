@@ -55,6 +55,8 @@ class Patients extends Component
 
     public string $emergencyContactPhone = '';
 
+    public string $address = '';
+
     public string $heightCm = '';
 
     public string $weightKg = '';
@@ -112,6 +114,7 @@ class Patients extends Component
         $this->emergencyContactName = $patient->emergency_contact_name ?? '';
         $this->emergencyContactRelationship = $patient->emergency_contact_relationship ?? '';
         $this->emergencyContactPhone = $patient->emergency_contact_phone ?? '';
+        $this->address = $patient->address ?? '';
         $this->heightCm = $patient->height_cm !== null ? (string) $patient->height_cm : '';
         $this->weightKg = $patient->weight_kg !== null ? (string) $patient->weight_kg : '';
         $this->bmi = $patient->bmi !== null ? (string) $patient->bmi : '';
@@ -146,6 +149,7 @@ class Patients extends Component
             'emergencyContactName' => ['nullable', 'string', 'max:150'],
             'emergencyContactRelationship' => ['nullable', 'string', 'max:100'],
             'emergencyContactPhone' => ['nullable', 'string', 'max:30'],
+            'address' => ['nullable', 'string', 'max:255'],
             'heightCm' => ['nullable', 'numeric', 'min:30', 'max:250'],
             'weightKg' => ['nullable', 'numeric', 'min:1', 'max:500'],
             'bmi' => ['nullable', 'numeric', 'min:5', 'max:100'],
@@ -172,6 +176,7 @@ class Patients extends Component
             'emergency_contact_name' => $validated['emergencyContactName'] ?: null,
             'emergency_contact_relationship' => $validated['emergencyContactRelationship'] ?: null,
             'emergency_contact_phone' => $validated['emergencyContactPhone'] ?: null,
+            'address' => $validated['address'] ?: null,
             'height_cm' => $validated['heightCm'] !== null && $validated['heightCm'] !== '' ? $validated['heightCm'] : null,
             'weight_kg' => $validated['weightKg'] !== null && $validated['weightKg'] !== '' ? $validated['weightKg'] : null,
             'bmi' => $validated['bmi'] !== null && $validated['bmi'] !== '' ? $validated['bmi'] : null,
@@ -247,6 +252,7 @@ class Patients extends Component
             'emergencyContactName',
             'emergencyContactRelationship',
             'emergencyContactPhone',
+            'address',
             'heightCm',
             'weightKg',
             'bmi',

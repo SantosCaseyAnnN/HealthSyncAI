@@ -59,16 +59,67 @@
                         <a href="{{ route('prescriptions') }}" class="rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:bg-blue-50">Prescription records</a>
                     </div>
                 </section>
+                <section class="grid grid-cols-1 gap-6 lg:grid-cols-[1.4fr_.8fr]">
+                    <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                        <div class="flex items-center justify-between gap-3">
+                            <div>
+                                <h2 class="text-lg font-semibold text-slate-900">Patient check-in review</h2>
+                                <p class="mt-1 text-sm text-slate-500">Verify patient details before adding check-ins to the queue.</p>
+                            </div>
+                            <a href="{{ route('check-ins.index') }}" class="text-sm font-semibold text-blue-700">View all</a>
+                        </div>
+                        <div class="mt-4 divide-y divide-slate-100">
+                            @forelse ($pendingCheckIns as $checkIn)
+                                <a wire:key="dashboard-check-in-{{ $checkIn->id }}" href="{{ route('check-ins.index') }}" class="flex items-center justify-between gap-4 py-3">
+                                    <span>
+                                        <span class="block text-sm font-semibold text-slate-900">{{ $checkIn->first_name }} {{ $checkIn->last_name }}</span>
+                                        <span class="block text-xs text-slate-500">{{ $checkIn->created_at->format('h:i A') }} · QR check-in</span>
+                                    </span>
+                                    <span class="text-sm font-semibold text-blue-700">Review →</span>
+                                </a>
+                            @empty
+                                <p class="py-5 text-sm text-slate-500">No check-ins are awaiting review.</p>
+                            @endforelse
+                        </div>
+                    </div>
+                    <aside class="rounded-3xl bg-slate-900 p-6 text-white">
+                        <p class="text-xs font-semibold uppercase tracking-wide text-blue-200">Workflow estimate</p>
+                        <h2 class="mt-2 text-xl font-semibold">Estimated patient wait</h2>
+                        <p class="mt-4 text-4xl font-semibold">{{ $estimatedQueueWait }} <span class="text-base font-medium text-slate-300">min</span></p>
+                        <p class="mt-4 border-t border-white/15 pt-4 text-xs leading-5 text-slate-300">A simple queue-position estimate for scheduling support. It is not an AI model or medical judgment.</p>
+                    </aside>
+                </section>
+                <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <h2 class="text-lg font-semibold text-slate-900">Live queue</h2>
+                            <p class="mt-1 text-sm text-slate-500">Queue monitoring for today.</p>
+                        </div>
+                        <a href="{{ route('check-ins.index', ['statusFilter' => 'queue']) }}" class="text-sm font-semibold text-blue-700">Manage queue →</a>
+                    </div>
+                    <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                        @forelse ($todayQueue as $queueEntry)
+                            <article wire:key="dashboard-queue-{{ $queueEntry->id }}" class="rounded-2xl bg-slate-50 p-4">
+                                <p class="text-xs font-semibold text-blue-700">Q-{{ str_pad((string) $queueEntry->queue_number, 3, '0', STR_PAD_LEFT) }}</p>
+                                <p class="mt-2 text-sm font-semibold text-slate-900">{{ $queueEntry->patient->first_name }} {{ $queueEntry->patient->last_name }}</p>
+                                <p class="mt-1 text-xs text-slate-500">{{ str($queueEntry->status)->replace('_', ' ')->title() }}</p>
+                            </article>
+                        @empty
+                            <p class="py-4 text-sm text-slate-500">No patients are currently in the queue.</p>
+                        @endforelse
+                    </div>
+                </section>
             @elseif (auth()->user()->isAdmin())
                 <section class="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-8">
                     <div class="flex flex-wrap items-start justify-between gap-4">
                         <div>
                             <p class="text-sm font-semibold text-blue-700">ADMINISTRATION</p>
-                            <h2 class="mt-2 text-2xl font-semibold text-slate-900">Manage workspace access</h2>
+                            <h2 class="mt-2 text-2xl font-semibold text-slate-900">Clinic overview</h2>
                             <p class="mt-2 text-sm text-slate-500">Review applications and maintain clinic staff and administrator accounts.</p>
                         </div>
                         <a href="{{ route('admin.accounts') }}" class="rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800">Manage accounts</a>
                     </div>
+                    <p class="mt-6 text-sm text-slate-600">This overview shows aggregate clinic activity only. Patient records and queue details remain restricted to authorized clinic staff.</p>
                     <div class="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-3">
                         @foreach ($stats as $label => $value)
                             <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">

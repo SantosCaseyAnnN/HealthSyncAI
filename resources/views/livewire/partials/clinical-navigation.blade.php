@@ -8,8 +8,8 @@
     <div class="nav-title">NAVIGATION</div>
 
     <nav class="navigation">
-        <a href="{{ route('dashboard') }}" class="nav-item">
-            <span>▦</span> Dashboard
+        <a href="{{ route('dashboard') }}" @class(['nav-item', 'active' => $active === 'dashboard'])>
+            <span>▦</span> Clinic overview
         </a>
         <a href="{{ route('patients') }}" @class(['nav-item', 'active' => $active === 'patients'])>
             <span>♙</span> Patients

@@ -23,6 +23,8 @@ class PatientCheckInController extends Controller
             'date_of_birth' => ['nullable', 'date', 'before_or_equal:today'],
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'consent_given' => ['accepted'],
             'reason_for_visit' => ['nullable', 'string', 'max:2000'],
             'gender' => ['nullable', 'string', 'in:Female,Male,Other'],
             'height_cm' => ['nullable', 'numeric', 'min:30', 'max:250'],

@@ -43,6 +43,10 @@
                     <input name="email" type="email" value="{{ old('email') }}" maxlength="255" autocomplete="email" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
                     @error('email') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
                 </label>
+                <label class="block text-sm font-medium text-slate-700">Address
+                    <input name="address" value="{{ old('address') }}" maxlength="255" autocomplete="street-address" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                    @error('address') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
+                </label>
                 <label class="block text-sm font-medium text-slate-700">Reason for visit <span class="font-normal text-slate-400">Optional</span>
                     <textarea name="reason_for_visit" rows="3" maxlength="2000" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">{{ old('reason_for_visit') }}</textarea>
                     @error('reason_for_visit') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
@@ -51,26 +55,39 @@
                     <legend class="px-2 text-sm font-semibold text-slate-700">Basic clinic measurements <span class="font-normal text-slate-400">Optional</span></legend>
                     <label class="text-sm font-medium text-slate-700">Height (cm)
                         <input name="height_cm" type="number" step="0.1" min="30" max="250" value="{{ old('height_cm') }}" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                        @error('height_cm') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="text-sm font-medium text-slate-700">Weight (kg)
                         <input name="weight_kg" type="number" step="0.1" min="1" max="500" value="{{ old('weight_kg') }}" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                        @error('weight_kg') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="text-sm font-medium text-slate-700">Blood pressure
                         <input name="blood_pressure" value="{{ old('blood_pressure') }}" maxlength="20" placeholder="120/80" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                        @error('blood_pressure') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="text-sm font-medium text-slate-700">Temperature (C)
                         <input name="temperature_c" type="number" step="0.1" min="25" max="45" value="{{ old('temperature_c') }}" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                        @error('temperature_c') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="text-sm font-medium text-slate-700">Pulse (bpm)
                         <input name="pulse_rate" type="number" min="20" max="300" value="{{ old('pulse_rate') }}" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                        @error('pulse_rate') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="text-sm font-medium text-slate-700">Respiratory rate
                         <input name="respiratory_rate" type="number" min="4" max="80" value="{{ old('respiratory_rate') }}" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                        @error('respiratory_rate') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="text-sm font-medium text-slate-700">Oxygen saturation (%)
                         <input name="oxygen_saturation" type="number" step="0.1" min="50" max="100" value="{{ old('oxygen_saturation') }}" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                        @error('oxygen_saturation') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
                     </label>
                 </fieldset>
+                <label class="flex items-start gap-3 text-sm leading-5 text-slate-600">
+                    <input type="checkbox" name="consent_given" value="1" required @checked(old('consent_given')) class="mt-1 rounded border-slate-300 text-blue-700 focus:ring-blue-600">
+                    <span>I consent to the clinic using this information for my visit. Clinic staff will review it before queue registration.
+                        @error('consent_given') <span class="block text-rose-600">{{ $message }}</span> @enderror
+                    </span>
+                </label>
                 <button type="submit" class="w-full rounded-xl bg-blue-700 px-4 py-3 font-semibold text-white hover:bg-blue-800">Send for clinic review</button>
             </form>
             <p class="mt-5 text-xs leading-5 text-slate-500">Please do not use this form for urgent medical needs. Contact clinic staff directly for urgent assistance.</p>

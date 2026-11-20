@@ -8,6 +8,7 @@ use App\Models\Patient;
 use App\Models\User;
 use App\Notifications\AccountDecisionNotification;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
 
@@ -117,6 +118,8 @@ it('accepts basic measurements on a signed public check-in and stores it pending
         'gender' => 'Female',
         'phone' => '555-0199',
         'email' => 'jamie@example.com',
+        'address' => 'Quezon City, Metro Manila',
+        'consent_given' => '1',
         'reason_for_visit' => 'Routine follow-up',
         'height_cm' => 165,
         'weight_kg' => 60,
@@ -131,6 +134,8 @@ it('accepts basic measurements on a signed public check-in and stores it pending
         'patient_id' => $patient->id,
         'first_name' => 'Jamie',
         'gender' => 'Female',
+        'address' => 'Quezon City, Metro Manila',
+        'consent_given' => true,
         'height_cm' => 165,
         'weight_kg' => 60,
         'blood_pressure' => '118/76',
@@ -143,6 +148,7 @@ it('registers a reviewed check-in and updates the linked patient measurements', 
     $staff = User::factory()->create(['role' => User::ROLE_CLINIC_STAFF]);
     $patient = Patient::factory()->create();
     $checkIn = CheckIn::factory()->for($patient)->create([
+        'consent_given' => true,
         'gender' => 'Female',
         'height_cm' => 165,
         'weight_kg' => 60,
@@ -169,6 +175,43 @@ it('registers a reviewed check-in and updates the linked patient measurements', 
         ->weight_kg->toBe('60.00')
         ->blood_pressure->toBe('118/76')
         ->bmi->toBe('22.04');
+});
+
+it('calls the next queue patient and completes the consultation', function () {
+    $staff = User::factory()->create(['role' => User::ROLE_CLINIC_STAFF]);
+    $patient = Patient::factory()->create();
+    $checkIn = CheckIn::factory()->for($patient)->create([
+        'status' => 'registered',
+        'queue_number' => 1,
+    ]);
+
+    Livewire::actingAs($staff)->test(CheckIns::class)
+        ->call('callNextPatient')
+        ->assertHasNoErrors();
+
+    expect($checkIn->fresh())
+        ->status->toBe('in_consultation')
+        ->reviewed_by_user_id->toBe($staff->id);
+
+    Livewire::actingAs($staff)->test(CheckIns::class)
+        ->call('completePatient', $checkIn->id)
+        ->assertHasNoErrors();
+
+    expect($checkIn->fresh()->status)->toBe('completed');
+});
+
+it('requires consent and validates basic measurement ranges on public check-in', function () {
+    $patient = Patient::factory()->create();
+    $signedUrl = URL::signedRoute('check-ins.store', ['patient' => $patient]);
+
+    $this->post($signedUrl, [
+        'first_name' => 'Jamie',
+        'last_name' => 'Rivera',
+        'height_cm' => 999,
+        'pulse_rate' => 500,
+    ])->assertSessionHasErrors(['consent_given', 'height_cm', 'pulse_rate']);
+
+    $this->assertDatabaseCount('check_ins', 0);
 });
 
 it('allows clinic staff to create patient-linked prescription records', function () {
@@ -199,4 +242,21 @@ it('returns 404 for the removed student workspace route', function () {
     $this->actingAs(User::factory()->create(['role' => User::ROLE_CLINIC_STAFF]))
         ->get('/practice')
         ->assertNotFound();
+});
+
+it('keeps deactivated legacy accounts out of all workspaces', function () {
+    $legacyAccount = User::factory()->create([
+        'role' => User::ROLE_DISABLED,
+        'approval_status' => User::APPROVAL_REJECTED,
+        'is_active' => false,
+    ]);
+
+    $this->actingAs($legacyAccount)->get('/patients')->assertRedirect(route('dashboard'));
+    expect($legacyAccount->roleLabel())->toBe('Deactivated');
+});
+
+it('does not retain student account identity fields in the current schema', function () {
+    expect(Schema::hasColumn('users', 'school_id'))->toBeFalse()
+        ->and(Schema::hasColumn('users', 'year_level'))->toBeFalse()
+        ->and(Schema::hasColumn('users', 'school_id_verified_at'))->toBeFalse();
 });

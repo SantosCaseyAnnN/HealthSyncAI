@@ -29,6 +29,7 @@ class Patient extends Model
         'emergency_contact_name',
         'emergency_contact_relationship',
         'emergency_contact_phone',
+        'address',
         'height_cm',
         'weight_kg',
         'bmi',

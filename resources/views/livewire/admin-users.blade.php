@@ -2,7 +2,11 @@
     <div class="mx-auto max-w-7xl space-y-6">
         <header class="flex flex-wrap items-end justify-between gap-4">
             <div>
-                <a href="{{ route('dashboard') }}" class="text-sm font-medium text-blue-700 hover:text-blue-900">← Dashboard</a>
+                <div class="flex gap-4 text-sm font-medium">
+                    <a href="{{ route('dashboard') }}" class="text-blue-700 hover:text-blue-900">Clinic overview</a>
+                    <span class="text-slate-400">/</span>
+                    <span class="text-slate-500">User accounts</span>
+                </div>
                 <p class="mt-5 text-sm font-semibold text-blue-700">ADMIN WORKSPACE</p>
                 <h1 class="mt-1 text-3xl font-semibold tracking-tight text-slate-900">Accounts and applications</h1>
                 <p class="mt-2 text-sm text-slate-500">{{ $pendingCount }} application(s) awaiting review.</p>
@@ -15,6 +19,20 @@
         @error('approval')
             <p class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="alert">{{ $message }}</p>
         @enderror
+
+        <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            @foreach ([
+                'Clinic staff' => $clinicStaffCount,
+                'Pending approval' => $pendingCount,
+                'Deactivated staff' => $inactiveClinicStaffCount,
+                'Administrators' => $adminCount,
+            ] as $label => $count)
+                <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <p class="text-sm text-slate-500">{{ $label }}</p>
+                    <p class="mt-2 text-3xl font-semibold text-slate-900">{{ $count }}</p>
+                </article>
+            @endforeach
+        </section>
 
         @if ($editingUserId !== null)
             <section class="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm sm:p-7">

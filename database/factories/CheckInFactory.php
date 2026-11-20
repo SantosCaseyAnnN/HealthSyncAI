@@ -26,6 +26,7 @@ class CheckInFactory extends Factory
             'phone' => fake()->phoneNumber(),
             'email' => fake()->safeEmail(),
             'reason_for_visit' => fake()->sentence(),
+            'consent_given' => true,
             'status' => 'pending',
             'check_in_date' => now()->toDateString(),
             'queue_number' => null,

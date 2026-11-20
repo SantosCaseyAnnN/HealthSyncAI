@@ -2,7 +2,12 @@
     @include('livewire.partials.clinical-navigation', ['active' => 'check-ins'])
     <main class="main-content">
         <div class="page-heading">
-            <div><h2>Patient check-ins & queue</h2><p>Review QR check-in submissions before registering patients in today's queue.</p></div>
+            <div><h2>Patient check-in</h2><p>Review QR check-in submissions before registering patients in today's queue.</p></div>
+            @if ($nextPatient)
+                <button type="button" wire:click="callNextPatient" class="primary-button">Call next patient</button>
+            @else
+                <button type="button" disabled class="primary-button opacity-60">No patient waiting</button>
+            @endif
         </div>
         @if (session()->has('status')) <p class="clinical-notice" role="status">{{ session('status') }}</p> @endif
         <p class="clinical-notice" role="note">Queue waiting times are estimates for workflow planning only, not medical judgments. Review patients who may need urgent care using your clinical procedures.</p>
@@ -16,7 +21,7 @@
             </select></label>
         </div>
         <section class="directory-panel">
-            <div class="panel-heading"><div><strong>Check-in submissions</strong><small>Review submitted information against the patient's record before registering in queue.</small></div><span class="record-count">{{ $checkIns->total() }} requests</span></div>
+            <div class="panel-heading"><div><strong>{{ $statusFilter === 'queue' ? 'Live queue' : 'Check-in submissions' }}</strong><small>Review submitted information against the patient's record before registering in queue.</small></div><span class="record-count">{{ $checkIns->total() }} requests</span></div>
             <div class="table-scroll">
                 <table class="health-table">
                     <thead><tr><th>SUBMITTED</th><th>PATIENT</th><th>CONTACT</th><th>VISIT REASON</th><th>STATUS / QUEUE</th><th>WAIT ESTIMATE</th><th>ACTIONS</th></tr></thead>
@@ -25,7 +30,7 @@
                             <tr wire:key="check-in-{{ $checkIn->id }}">
                                 <td>{{ $checkIn->created_at->format('M d, h:i A') }}</td>
                                 <td><strong>{{ $checkIn->first_name }} {{ $checkIn->last_name }}</strong><small class="block">{{ $checkIn->date_of_birth?->format('M d, Y') ?: 'Birth date not provided' }}</small><small class="block">Linked: {{ $checkIn->patient->patient_number }} — {{ $checkIn->patient->first_name }} {{ $checkIn->patient->last_name }}</small></td>
-                                <td>{{ $checkIn->phone ?: '—' }}<small class="block">{{ $checkIn->email ?: '' }}</small></td>
+                                <td>{{ $checkIn->phone ?: '—' }}<small class="block">{{ $checkIn->email ?: '' }}</small><small class="block">{{ $checkIn->address ?: '' }}</small></td>
                                 <td>
                                     {{ $checkIn->reason_for_visit ?: 'Not provided' }}
                                     @if ($checkIn->gender || $checkIn->height_cm || $checkIn->weight_kg || $checkIn->blood_pressure)
@@ -43,11 +48,15 @@
                                         </small>
                                     @endif
                                 </td>
-                                <td>{{ str($checkIn->status)->title() }} @if ($checkIn->queue_number)<small class="block">#{{ $checkIn->queue_number }}</small>@endif</td>
+                                <td>{{ str($checkIn->status)->replace('_', ' ')->title() }} @if ($checkIn->queue_number)<small class="block">#{{ $checkIn->queue_number }}</small>@endif</td>
                                 <td>@if ($checkIn->status === 'registered') ~{{ max(0, $checkIn->queue_number - 1) * 15 }} min<small class="block">Workflow estimate only</small>@else — @endif</td>
                                 <td>
                                     @if ($checkIn->status === 'pending')
                                         <div class="flex flex-col gap-2"><button type="button" wire:click="registerInQueue({{ $checkIn->id }})" class="small-outline-button">Verify & register</button><button type="button" wire:click="rejectCheckIn({{ $checkIn->id }})" class="small-outline-button">Reject</button></div>
+                                    @elseif ($checkIn->status === 'registered')
+                                        <small>Waiting for next call</small>
+                                    @elseif ($checkIn->status === 'in_consultation')
+                                        <button type="button" wire:click="completePatient({{ $checkIn->id }})" class="small-outline-button">Complete visit</button>
                                     @else
                                         <small>Reviewed by {{ $checkIn->reviewedBy?->name ?: 'Clinic staff' }}</small>
                                     @endif

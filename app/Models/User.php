@@ -16,6 +16,8 @@ class User extends Authenticatable
 
     public const ROLE_ADMIN = 'admin';
 
+    public const ROLE_DISABLED = 'disabled';
+
     public const APPROVAL_PENDING = 'pending';
 
     public const APPROVAL_APPROVED = 'approved';
@@ -103,6 +105,7 @@ class User extends Authenticatable
         return match ($this->role) {
             self::ROLE_CLINIC_STAFF => 'Clinic Staff',
             self::ROLE_ADMIN => 'Admin',
+            self::ROLE_DISABLED => 'Deactivated',
             default => 'Unassigned',
         };
     }
