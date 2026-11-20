@@ -35,7 +35,7 @@
                     height="160"
                     alt="QR code for patient {{ $profilePatient->patient_number }}"
                 >
-                <p>Scanning the code opens this profile and requires a signed-in account. The QR contains only the profile URL.</p>
+                <p>This QR opens the public check-in form, where new and returning patients can submit their information without signing in.</p>
                 <div class="clinical-form-grid">
                     <div><strong>Date of birth</strong><p>{{ $profilePatient->date_of_birth?->format('M j, Y') ?? 'Not recorded' }}</p></div>
                     <div><strong>Gender</strong><p>{{ $profilePatient->gender ?? 'Not recorded' }}</p></div>

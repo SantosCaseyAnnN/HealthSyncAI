@@ -9,9 +9,9 @@
 
         <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,.65fr)] lg:py-12">
         <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-            <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Clinic check-in</p>
-            <h1 class="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Share your check-in details</h1>
-            <p class="mt-3 text-sm leading-6 text-slate-600">This QR code is linked to a clinic record. Submit your basic details for staff review. Submitting this form does not place you in the queue; clinic staff will verify it first.</p>
+            <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Patient check-in</p>
+            <h1 class="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Submit your information</h1>
+            <p class="mt-3 text-sm leading-6 text-slate-600">New and returning patients can use this form. Clinic staff will review your details before adding you to the queue. Submitting this form does not register you in the queue.</p>
 
             @if (session('status'))
                 <p class="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800" role="status">{{ session('status') }}</p>
@@ -54,6 +54,13 @@
                     <input name="address" value="{{ old('address') }}" maxlength="255" autocomplete="street-address" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
                     @error('address') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
                 </label>
+                @unless ($patient)
+                    <label class="block text-sm font-medium text-slate-700">Existing patient number <span class="font-normal text-slate-400">Optional for returning patients</span>
+                        <input name="existing_patient_number" value="{{ old('existing_patient_number') }}" maxlength="30" autocomplete="off" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">
+                        <span class="mt-1 block text-xs font-normal text-slate-500">If you have one, clinic staff can use it to find your existing record.</span>
+                        @error('existing_patient_number') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror
+                    </label>
+                @endunless
                 <label class="block text-sm font-medium text-slate-700">Reason for visit <span class="font-normal text-slate-400">Optional</span>
                     <textarea name="reason_for_visit" rows="3" maxlength="2000" class="mt-2 block w-full rounded-xl border-slate-300 text-sm">{{ old('reason_for_visit') }}</textarea>
                     @error('reason_for_visit') <span class="mt-1 block text-sm text-rose-600">{{ $message }}</span> @enderror

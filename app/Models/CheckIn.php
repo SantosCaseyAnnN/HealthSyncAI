@@ -14,6 +14,7 @@ class CheckIn extends Model
 
     protected $fillable = [
         'patient_id',
+        'existing_patient_number',
         'first_name',
         'last_name',
         'date_of_birth',
@@ -54,6 +55,11 @@ class CheckIn extends Model
     public function patient(): BelongsTo
     {
         return $this->belongsTo(Patient::class);
+    }
+
+    public function requestedPatient(): BelongsTo
+    {
+        return $this->belongsTo(Patient::class, 'existing_patient_number', 'patient_number');
     }
 
     public function reviewedBy(): BelongsTo

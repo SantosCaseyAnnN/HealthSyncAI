@@ -144,6 +144,86 @@ it('accepts basic measurements on a signed public check-in and stores it pending
     ]);
 });
 
+it('lets new and returning patients submit through the shared public check-in link', function () {
+    Patient::factory()->create(['patient_number' => 'PAT-1001']);
+
+    $this->get(route('patient-check-in'))
+        ->assertOk()
+        ->assertSee('New and returning patients can use this form.')
+        ->assertSee('Existing patient number')
+        ->assertSee('Basic clinic measurements')
+        ->assertSee('name="consent_given"', false);
+
+    $this->from(route('patient-check-in'))
+        ->post(route('patient-check-in.store'), [
+            'first_name' => 'Jamie',
+            'last_name' => 'Rivera',
+            'date_of_birth' => '1994-05-12',
+            'phone' => '555-0199',
+            'consent_given' => '1',
+            'existing_patient_number' => 'pat-1001',
+            'height_cm' => 165,
+            'weight_kg' => 60,
+        ])
+        ->assertRedirect(route('patient-check-in'))
+        ->assertSessionHas('status');
+
+    $this->from(route('patient-check-in'))
+        ->post(route('patient-check-in.store'), [
+            'first_name' => 'Taylor',
+            'last_name' => 'Santos',
+            'consent_given' => '1',
+        ])
+        ->assertRedirect(route('patient-check-in'))
+        ->assertSessionHas('status');
+
+    $this->assertDatabaseHas('check_ins', [
+        'patient_id' => null,
+        'existing_patient_number' => 'PAT-1001',
+        'first_name' => 'Jamie',
+        'last_name' => 'Rivera',
+        'status' => 'pending',
+        'queue_number' => null,
+        'consent_given' => true,
+        'height_cm' => 165,
+        'weight_kg' => 60,
+    ]);
+    $this->assertDatabaseHas('check_ins', [
+        'patient_id' => null,
+        'existing_patient_number' => null,
+        'first_name' => 'Taylor',
+        'last_name' => 'Santos',
+        'status' => 'pending',
+        'queue_number' => null,
+        'consent_given' => true,
+    ]);
+    $this->assertDatabaseCount('check_ins', 2);
+    $this->assertDatabaseCount('patients', 1);
+
+    $staff = User::factory()->create(['role' => User::ROLE_CLINIC_STAFF]);
+    $this->actingAs($staff)
+        ->get(route('check-ins.index'))
+        ->assertSee('Match & register')
+        ->assertSee('Create patient & register');
+});
+
+it('shows clinic staff the shareable patient check-in link and QR code', function () {
+    $staff = User::factory()->create(['role' => User::ROLE_CLINIC_STAFF]);
+
+    $this->actingAs($staff)
+        ->get(route('check-ins.index'))
+        ->assertOk()
+        ->assertSee('Share the patient check-in form')
+        ->assertSee(route('patient-check-in'))
+        ->assertSee(route('patient-check-in.qr'));
+
+    $this->actingAs($staff)
+        ->get(route('patient-check-in.qr'))
+        ->assertOk()
+        ->assertHeader('Content-Type', 'image/svg+xml')
+        ->assertSee('<svg', false);
+});
+
 it('registers a reviewed check-in and updates the linked patient measurements', function () {
     $staff = User::factory()->create(['role' => User::ROLE_CLINIC_STAFF]);
     $patient = Patient::factory()->create();
@@ -175,6 +255,78 @@ it('registers a reviewed check-in and updates the linked patient measurements', 
         ->weight_kg->toBe('60.00')
         ->blood_pressure->toBe('118/76')
         ->bmi->toBe('22.04');
+});
+
+it('creates a patient record when clinic staff verify a new public check-in', function () {
+    $staff = User::factory()->create(['role' => User::ROLE_CLINIC_STAFF]);
+    $checkIn = CheckIn::factory()->create([
+        'patient_id' => null,
+        'existing_patient_number' => null,
+        'first_name' => 'Jamie',
+        'last_name' => 'Rivera',
+        'date_of_birth' => '1994-05-12',
+        'phone' => '555-0199',
+        'email' => 'jamie@example.com',
+        'address' => 'Quezon City',
+        'height_cm' => 165,
+        'weight_kg' => 60,
+    ]);
+
+    Livewire::actingAs($staff)->test(CheckIns::class)
+        ->call('registerInQueue', $checkIn->id)
+        ->assertHasNoErrors()
+        ->assertSee('Check-in verified and added to queue #1');
+
+    $patient = Patient::query()->where('email', 'jamie@example.com')->firstOrFail();
+    expect($checkIn->fresh())
+        ->status->toBe('registered')
+        ->queue_number->toBe(1)
+        ->patient_id->toBe($patient->id);
+    expect($patient)
+        ->first_name->toBe('Jamie')
+        ->last_name->toBe('Rivera')
+        ->address->toBe('Quezon City')
+        ->height_cm->toBe('165.00')
+        ->weight_kg->toBe('60.00');
+    $this->assertModelExists($patient);
+});
+
+it('matches a returning public check-in by patient number and refuses an unknown number', function () {
+    $staff = User::factory()->create(['role' => User::ROLE_CLINIC_STAFF]);
+    $patient = Patient::factory()->create(['patient_number' => 'PAT-2345']);
+    $returningCheckIn = CheckIn::factory()->create([
+        'patient_id' => null,
+        'existing_patient_number' => $patient->patient_number,
+    ]);
+
+    Livewire::actingAs($staff)->test(CheckIns::class)
+        ->call('registerInQueue', $returningCheckIn->id)
+        ->assertHasNoErrors();
+
+    expect($returningCheckIn->fresh())
+        ->patient_id->toBe($patient->id)
+        ->status->toBe('registered');
+
+    $unknownNumberCheckIn = CheckIn::factory()->create([
+        'patient_id' => null,
+        'existing_patient_number' => 'PAT-DOES-NOT-EXIST',
+    ]);
+
+    Livewire::actingAs($staff)->test(CheckIns::class)
+        ->call('registerInQueue', $unknownNumberCheckIn->id)
+        ->assertSee('No patient record matches the number submitted.');
+
+    expect($unknownNumberCheckIn->fresh())
+        ->patient_id->toBeNull()
+        ->status->toBe('pending');
+
+    Livewire::actingAs($staff)->test(CheckIns::class)
+        ->call('registerAsNewPatient', $unknownNumberCheckIn->id)
+        ->assertHasNoErrors();
+
+    expect($unknownNumberCheckIn->fresh())
+        ->patient_id->not->toBeNull()
+        ->status->toBe('registered');
 });
 
 it('calls the next queue patient and completes the consultation', function () {

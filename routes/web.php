@@ -22,6 +22,11 @@ Route::get('/', function () {
 
 Route::view('/login', 'auth.login')->name('login');
 Route::view('/register', 'auth.register')->name('register');
+Route::get('/patient-check-in', [PatientCheckInController::class, 'showPublic'])
+    ->name('patient-check-in');
+Route::post('/patient-check-in', [PatientCheckInController::class, 'storePublic'])
+    ->middleware('throttle:10,1')
+    ->name('patient-check-in.store');
 Route::get('/check-in/{patient}', [PatientCheckInController::class, 'show'])
     ->middleware('signed')
     ->name('check-ins.show');
@@ -93,6 +98,8 @@ Route::middleware([
         Route::get('/medical-records', MedicalRecords::class)->name('medical-records');
         Route::get('/prescriptions', Prescriptions::class)->name('prescriptions');
         Route::get('/check-ins', CheckIns::class)->name('check-ins.index');
+        Route::get('/patient-check-in/qr', [PatientQrCodeController::class, 'publicCheckIn'])
+            ->name('patient-check-in.qr');
     });
 
     Route::get('/admin/accounts', AdminUsers::class)

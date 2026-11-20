@@ -8,17 +8,25 @@ use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\URL;
 
 class PatientQrCodeController extends Controller
 {
     public function __invoke(Patient $patient): Response
     {
+        return $this->qrCodeResponse(route('patient-check-in'));
+    }
+
+    public function publicCheckIn(): Response
+    {
+        return $this->qrCodeResponse(route('patient-check-in'));
+    }
+
+    private function qrCodeResponse(string $url): Response
+    {
         $renderer = new ImageRenderer(new RendererStyle(256), new SvgImageBackEnd);
         $writer = new Writer($renderer);
-        $profileUrl = URL::signedRoute('check-ins.show', ['patient' => $patient]);
 
-        return response($writer->writeString($profileUrl), 200, [
+        return response($writer->writeString($url), 200, [
             'Content-Type' => 'image/svg+xml',
             'Cache-Control' => 'private, no-store',
         ]);

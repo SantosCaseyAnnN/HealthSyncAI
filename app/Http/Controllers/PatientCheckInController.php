@@ -10,12 +10,27 @@ use Illuminate\View\View;
 
 class PatientCheckInController extends Controller
 {
+    public function showPublic(): View
+    {
+        return view('check-ins.public', ['patient' => null]);
+    }
+
     public function show(Patient $patient): View
     {
         return view('check-ins.public', ['patient' => $patient]);
     }
 
+    public function storePublic(Request $request): RedirectResponse
+    {
+        return $this->submit($request);
+    }
+
     public function store(Request $request, Patient $patient): RedirectResponse
+    {
+        return $this->submit($request, $patient);
+    }
+
+    private function submit(Request $request, ?Patient $patient = null): RedirectResponse
     {
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:100'],
@@ -24,6 +39,7 @@ class PatientCheckInController extends Controller
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
             'address' => ['nullable', 'string', 'max:255'],
+            'existing_patient_number' => ['nullable', 'string', 'max:30'],
             'consent_given' => ['accepted'],
             'reason_for_visit' => ['nullable', 'string', 'max:2000'],
             'gender' => ['nullable', 'string', 'in:Female,Male,Other'],
@@ -38,7 +54,10 @@ class PatientCheckInController extends Controller
 
         CheckIn::create([
             ...$validated,
-            'patient_id' => $patient->id,
+            'existing_patient_number' => ($validated['existing_patient_number'] ?? null)
+                ? strtoupper(trim($validated['existing_patient_number']))
+                : null,
+            'patient_id' => $patient?->id,
             'status' => 'pending',
             'check_in_date' => now()->toDateString(),
         ]);
